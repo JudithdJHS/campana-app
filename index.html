@@ -207,14 +207,14 @@
           };
 
           const totalEchos = leads.length;
-          // --- CAMBIO A META DE 20 ---
+          // META 20 ECOS
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
           return (
             <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-8">
               
-              {/* HEADER CON LOGO BLANCO REAL */}
+              {/* HEADER */}
               <header className="text-center mb-4 mt-2 animate-in fade-in slide-in-from-top duration-700 w-full max-w-2xl px-4">
                 
                 <img 
@@ -230,7 +230,6 @@
                         Haz que la esperanza también suene para otros niños que continúan su lucha.
                     </p>
                     <p className="text-xs md:text-sm font-quicksand font-bold text-[#ffd058] uppercase tracking-wide">
-                        {/* TEXTO ACTUALIZADO A 20 */}
                         Cada 20 campanadas, un niño recibe un kit de arteterapia 🎨
                     </p>
                 </div>
@@ -254,7 +253,6 @@
                   <div className="bg-white/20 h-8 rounded-full overflow-hidden relative">
                     <div className="h-full bg-gradient-to-r from-[#ffd058] to-[#ffb800]" style={{ width: `${(progress / 20) * 100}%`, transition: 'width 1s ease' }}></div>
                     <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-sm">
-                      {/* TEXTO ACTUALIZADO A 20 */}
                       Faltan {20 - progress} ecos para el próximo taller
                     </div>
                   </div>
@@ -293,7 +291,7 @@
                 ¡HACER SONAR!
               </button>
 
-              {/* SIGNIFICADO DE LA CAMPANA CON FOTO */}
+              {/* TARJETA SIGNIFICADO + FOTO */}
               <div className="w-full max-w-2xl px-4 mb-8 animate-in fade-in slide-in-from-bottom duration-1000">
                 <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 text-center shadow-lg border-2 border-white/20">
                     
@@ -347,12 +345,12 @@
                 </div>
               </div>
 
-              {/* PIE DE PÁGINA */}
+              {/* PIE DE PÁGINA ACTUALIZADO */}
               <div className="w-full max-w-xl px-2">
                   <div className="bg-white rounded-2xl p-4 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
                     <p className="text-[#116cc5] text-lg font-bold flex flex-col md:flex-row items-center justify-center gap-2">
                         <span>🎨</span>
-                        <span>Cada eco financia alegría</span>
+                        <span>Cada eco financia alegría y terapia para los niños</span>
                         <span>💜</span>
                     </p>
                   </div>
