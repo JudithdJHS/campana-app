@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaña Fundación - Toca la Campana</title>
     
-    <!-- 1. Estilos (Tailwind) -->
+    <!-- 1. Estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. IMPORTANTE: Usamos ESM.SH para todo (Más estable que gstatic) -->
+    <!-- 2. Importaciones (VOLVEMOS A LAS DE GOOGLE QUE SI FUNCIONABAN) -->
     <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "firebase/app": "https://esm.sh/firebase@10.7.1/app",
-        "firebase/firestore": "https://esm.sh/firebase@10.7.1/firestore",
-        "firebase/auth": "https://esm.sh/firebase@10.7.1/auth"
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"
       }
     }
     </script>
@@ -28,19 +28,19 @@
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
         body { background-color: #0098d9; overflow-x: hidden; }
         
-        /* Animaciones */
         @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(-18deg); } 75% { transform: rotate(12deg); } }
         .bell-swing { animation: swing 1.2s ease-in-out; transform-origin: top center; }
         
         @keyframes wave { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.8); opacity: 0; } }
         
-        /* SOLUCIÓN AL BLOQUEO DE CLIC: pointer-events: none */
+        /* EL ARREGLO CLAVE: Las ondas no bloquean el clic */
         .wave-ring { 
             border-radius: 50%; 
             border: 4px solid rgba(255, 215, 0, 0.4); 
             position: absolute; 
             animation: wave 2s infinite;
-            pointer-events: none; /* ESTO PERMITE HACER CLIC A TRAVÉS DE LA ONDA */
+            pointer-events: none; /* MAGIA: El clic atraviesa la onda */
+            z-index: 0;
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -50,7 +50,13 @@
 </head>
 <body>
 
-    <div id="root"></div>
+    <!-- Si ves esto, es que React falló al cargar -->
+    <div id="root">
+        <div style="color:white; text-align:center; padding-top: 50px;">
+            Cargando la campaña...<br>
+            <small>Si no carga en 5 segundos, recarga la página.</small>
+        </div>
+    </div>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef } from 'react';
@@ -59,7 +65,7 @@
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
-        // TUS CLAVES REALES
+        // TUS CLAVES (NO TOCAR)
         const firebaseConfig = {
           apiKey: "AIzaSyCO9aonuABDfwjRjmUTKnPGgKRfNVP5VjU",
           authDomain: "campana-fundacion.firebaseapp.com",
@@ -87,28 +93,26 @@
           
           const audioContextRef = useRef(null);
 
-          // 1. Conexión a Firebase
+          // 1. Autenticación
           useEffect(() => {
-            signInAnonymously(auth).catch((error) => {
-                console.error("Error Auth:", error);
-            });
+            signInAnonymously(auth).catch((error) => console.error("Error Auth:", error));
             return onAuthStateChanged(auth, setUser);
           }, []);
 
-          // 2. Leer datos
+          // 2. Base de Datos
           useEffect(() => {
             const leadsRef = collection(db, 'leads');
             const msgsRef = collection(db, 'messages');
 
             const unsubLeads = onSnapshot(leadsRef, (snapshot) => {
               setLeads(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            }, (e) => console.log("Leyendo leads..."));
+            });
 
             const unsubMsgs = onSnapshot(msgsRef, (snapshot) => {
               const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
               data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
               setMessages(data);
-            }, (e) => console.log("Leyendo mensajes..."));
+            });
 
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
@@ -135,12 +139,13 @@
                 osc.stop(startTime + 0.4);
               }
             } catch (e) {
-                console.log("Audio bloqueado por el navegador (normal hasta hacer clic)");
+                console.log("Audio bloqueado (normal)");
             }
           };
 
           const handleRing = () => {
-            console.log("¡CLIC DETECTADO!"); // Esto aparecerá en consola si el botón funciona
+            // Este log confirma si el botón funciona
+            console.log("¡Ding Dong!"); 
             setIsSwinging(true);
             playBellSound();
             
@@ -157,7 +162,6 @@
             setLoading(true);
             setErrorMessage('');
 
-            // Validación simple
             if (!formData.email.includes('@')) {
                 setErrorMessage("Email incorrecto"); setLoading(false); return;
             }
@@ -231,12 +235,11 @@
                 </div>
               </div>
 
-              {/* CAMPANA Y ONDAS - AÑADIDO POINTER-EVENTS-NONE PARA EVITAR BLOQUEOS */}
+              {/* CAMPANA Y ONDAS - CORREGIDO */}
               <div className="relative mb-12 flex items-center justify-center h-72 md:h-96 pointer-events-none">
                 <div className="wave-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0.6s' }}></div>
                 
-                {/* La campana sí debe recibir clics, así que activamos pointer-events */}
                 <div 
                     onClick={handleRing} 
                     className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}
@@ -259,7 +262,7 @@
                 </div>
               </div>
 
-              {/* BOTÓN PRINCIPAL - Z-INDEX ALTO PARA ASEGURAR CLIC */}
+              {/* BOTÓN - CORREGIDO CON Z-INDEX */}
               <button 
                 onClick={handleRing} 
                 className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-3xl px-12 py-5 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-16 border-b-8 border-[#d4af37]"
@@ -296,7 +299,7 @@
               </div>
 
               {showLeadModal && (
-                <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+                <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
                   <div className="bg-white rounded-[30px] p-8 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in duration-300">
                     <button onClick={() => setShowLeadModal(false)} className="absolute top-4 right-4 text-gray-400 text-2xl">&times;</button>
                     <div className="text-6xl mb-4">🔔</div>
@@ -317,7 +320,7 @@
               )}
 
               {showThanksModal && (
-                <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+                <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
                   <div className="bg-white rounded-[30px] p-8 max-w-sm w-full text-center shadow-2xl animate-in zoom-in duration-300">
                     <div className="text-6xl mb-4">💛</div>
                     <h2 className="text-[#116cc5] font-lilita text-3xl mb-2">¡Gracias!</h2>
