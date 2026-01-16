@@ -33,7 +33,6 @@
         
         @keyframes wave { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.8); opacity: 0; } }
         
-        /* ONDAS QUE NO BLOQUEAN EL CLIC */
         .wave-ring { 
             border-radius: 50%; 
             border: 4px solid rgba(255, 215, 0, 0.4); 
@@ -83,13 +82,11 @@
           
           const audioContextRef = useRef(null);
 
-          // 1. Autenticación
           useEffect(() => {
             signInAnonymously(auth).catch((error) => console.error("Error Auth:", error));
             return onAuthStateChanged(auth, setUser);
           }, []);
 
-          // 2. Base de Datos
           useEffect(() => {
             const leadsRef = collection(db, 'leads');
             const msgsRef = collection(db, 'messages');
@@ -107,7 +104,6 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
-          // --- SONIDO ---
           const playBellSound = async () => {
             try {
               if (!audioContextRef.current) {
@@ -206,15 +202,13 @@
           const progress = totalEchos % 100;
 
           return (
-            <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-4 md:p-6 flex flex-col items-center">
+            <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-4 md:p-6 flex flex-col items-center pb-20">
               
-              {/* Header más compacto (mb-6 en vez de mb-10) */}
               <header className="text-center mb-6 mt-4 animate-in fade-in slide-in-from-top duration-700">
                 <h1 className="font-lilita text-4xl md:text-6xl mb-2 drop-shadow-xl text-[#ffd058]" style={{textShadow: '2px 2px 0px #116cc5'}}>Toca la Campana</h1>
                 <p className="text-lg md:text-xl font-quicksand font-bold">Cada eco financia arteterapia infantil 🎨</p>
               </header>
 
-              {/* Contadores más pegados (mb-8 en vez de mb-12) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mb-8">
                 <div className="bg-white rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(0,0,0,0.2)] transform hover:scale-105 transition-all">
                   <div className="font-lilita text-5xl text-[#0098d9]">{workshops}</div>
@@ -226,7 +220,6 @@
                 </div>
               </div>
 
-              {/* Barra más pegada (mb-8 en vez de mb-12) */}
               <div className="w-full max-w-3xl mb-8 px-4">
                 <div className="bg-[#116cc5]/30 backdrop-blur-md rounded-full p-2 border border-white/20">
                   <div className="bg-white/20 h-10 rounded-full overflow-hidden relative">
@@ -238,15 +231,11 @@
                 </div>
               </div>
 
-              {/* CAMPANA Y ONDAS - ALTURA REDUCIDA (h-56 en vez de h-72) */}
               <div className="relative mb-6 flex items-center justify-center h-56 md:h-72 pointer-events-none">
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
                 
-                <div 
-                    onClick={handleRing} 
-                    className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}
-                >
+                <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
                    <svg width="200" height="200" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[250px] md:h-[250px]">
                     <defs>
                       <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -265,10 +254,9 @@
                 </div>
               </div>
 
-              {/* BOTÓN - Margen reducido (mb-10) */}
               <button 
                 onClick={handleRing} 
-                className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-2xl md:text-3xl px-10 py-4 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-10 border-b-8 border-[#d4af37]"
+                className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-2xl md:text-3xl px-10 py-4 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-12 border-b-8 border-[#d4af37]"
               >
                 ¡HACER SONAR!
               </button>
@@ -286,21 +274,37 @@
                       <p className="text-sm mt-2">¡Sé el primero en tocar la campana y dejar uno!</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {messages.map((m, idx) => (
-                        <div key={idx} className="bg-white p-4 rounded-tr-3xl rounded-bl-3xl rounded-tl-md rounded-br-md shadow-lg transform hover:-translate-y-1 transition-all">
-                          <div className="flex justify-between mb-2 border-b border-gray-100 pb-1">
-                            <span className="font-bold text-[#116cc5] uppercase text-xs tracking-wider truncate mr-2">{m.name}</span>
-                            <span className="text-red-400">📌</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {messages.map((m, idx) => {
+                        // Rotación alterna para efecto "post-it"
+                        const rotateClass = idx % 2 === 0 ? 'rotate-1' : '-rotate-1';
+                        return (
+                          <div key={idx} className={`bg-white p-6 rounded-xl shadow-xl transform ${rotateClass} hover:rotate-0 transition-all hover:scale-105 hover:z-10`}>
+                            <div className="flex justify-between mb-3 border-b border-gray-100 pb-2">
+                              <span className="font-bold text-[#116cc5] uppercase text-xs tracking-wider truncate mr-2">{m.name}</span>
+                              <span className="text-red-400">📌</span>
+                            </div>
+                            <p className="text-gray-600 font-quicksand italic text-sm leading-relaxed line-clamp-4">"{m.message}"</p>
                           </div>
-                          <p className="text-gray-600 font-quicksand italic text-sm leading-relaxed line-clamp-4">"{m.message}"</p>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
               </div>
 
+              {/* PIE DE PÁGINA (Recuperado) */}
+              <div className="w-full max-w-2xl px-4">
+                  <div className="bg-white rounded-3xl p-6 text-center shadow-2xl border-b-8 border-[#ffd058] transform hover:scale-105 transition-all">
+                    <p className="text-[#116cc5] text-xl md:text-2xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
+                        <span>🎨</span>
+                        <span>Cada eco financia alegría y terapia para los niños</span>
+                        <span>💜</span>
+                    </p>
+                  </div>
+              </div>
+
+              {/* Modales */}
               {showLeadModal && (
                 <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
                   <div className="bg-white rounded-[30px] p-8 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in duration-300">
@@ -308,8 +312,6 @@
                     <div className="text-6xl mb-4">🔔</div>
                     <h2 className="text-[#116cc5] font-lilita text-3xl mb-2">¡Tu eco ya resuena!</h2>
                     <p className="text-gray-500 mb-6 text-sm">Completa tus datos para sumarlo a la meta</p>
-                    
-                    {errorMessage && <div className="bg-red-100 text-red-600 p-2 rounded mb-4 text-xs font-bold">{errorMessage}</div>}
                     
                     <form onSubmit={submitLead} className="space-y-4">
                       <input type="text" placeholder="Tu nombre" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 outline-none focus:border-[#0098d9] text-gray-700" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
