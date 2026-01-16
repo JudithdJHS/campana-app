@@ -4,34 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaña Fundación - Toca la Campana</title>
+    
+    <!-- 1. Estilos (Tailwind) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. IMPORTANTE: Usamos ESM.SH para todo (Más estable que gstatic) -->
     <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+        "firebase/app": "https://esm.sh/firebase@10.7.1/app",
+        "firebase/firestore": "https://esm.sh/firebase@10.7.1/firestore",
+        "firebase/auth": "https://esm.sh/firebase@10.7.1/auth"
       }
     }
     </script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Quicksand:wght@400;600;700&display=swap');
         .font-lilita { font-family: 'Lilita One', cursive; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
         body { background-color: #0098d9; overflow-x: hidden; }
+        
+        /* Animaciones */
         @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(-18deg); } 75% { transform: rotate(12deg); } }
         .bell-swing { animation: swing 1.2s ease-in-out; transform-origin: top center; }
+        
         @keyframes wave { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.8); opacity: 0; } }
-        .wave-ring { border-radius: 50%; border: 4px solid rgba(255, 215, 0, 0.4); position: absolute; animation: wave 2s infinite; }
+        
+        /* SOLUCIÓN AL BLOQUEO DE CLIC: pointer-events: none */
+        .wave-ring { 
+            border-radius: 50%; 
+            border: 4px solid rgba(255, 215, 0, 0.4); 
+            position: absolute; 
+            animation: wave 2s infinite;
+            pointer-events: none; /* ESTO PERMITE HACER CLIC A TRAVÉS DE LA ONDA */
+        }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
+
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
@@ -66,35 +84,31 @@
           const [messageData, setMessageData] = useState('');
           const [loading, setLoading] = useState(false);
           const [errorMessage, setErrorMessage] = useState('');
+          
           const audioContextRef = useRef(null);
 
-          // 1. INTENTAR CONECTAR Y AVISAR SI FALLA
+          // 1. Conexión a Firebase
           useEffect(() => {
-            console.log("Intentando conectar a Firebase...");
-            signInAnonymously(auth)
-                .then(() => console.log("¡Conexión exitosa!"))
-                .catch((error) => {
-                    console.error("ERROR CRÍTICO DE AUTH:", error);
-                    alert("⚠️ ERROR DE CONFIGURACIÓN FIREBASE:\n\n" + error.code + "\n\n" + error.message + "\n\nRevisa si activaste 'Anónimo' en Authentication.");
-                });
+            signInAnonymously(auth).catch((error) => {
+                console.error("Error Auth:", error);
+            });
             return onAuthStateChanged(auth, setUser);
           }, []);
 
-          // 2. LEER DATOS
+          // 2. Leer datos
           useEffect(() => {
             const leadsRef = collection(db, 'leads');
             const msgsRef = collection(db, 'messages');
 
-            // Si esto falla, mostrará error en consola
             const unsubLeads = onSnapshot(leadsRef, (snapshot) => {
               setLeads(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            }, (error) => console.log("Esperando permisos de base de datos...", error));
+            }, (e) => console.log("Leyendo leads..."));
 
             const unsubMsgs = onSnapshot(msgsRef, (snapshot) => {
               const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
               data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
               setMessages(data);
-            });
+            }, (e) => console.log("Leyendo mensajes..."));
 
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
@@ -104,6 +118,7 @@
               if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
               const ctx = audioContextRef.current;
               if (ctx.state === 'suspended') ctx.resume();
+              
               const now = ctx.currentTime;
               for (let i = 0; i < 4; i++) {
                 const startTime = now + (i * 0.2); 
@@ -119,15 +134,16 @@
                 osc.start(startTime);
                 osc.stop(startTime + 0.4);
               }
-            } catch (e) { console.log("Audio no disponible (navegador bloqueó sonido automático)"); }
+            } catch (e) {
+                console.log("Audio bloqueado por el navegador (normal hasta hacer clic)");
+            }
           };
 
           const handleRing = () => {
-            // Animación visual inmediata (funciona sin internet)
+            console.log("¡CLIC DETECTADO!"); // Esto aparecerá en consola si el botón funciona
             setIsSwinging(true);
             playBellSound();
             
-            // Retardo para abrir modal
             setTimeout(() => setIsSwinging(false), 1200);
             setTimeout(() => {
               setErrorMessage('');
@@ -135,17 +151,19 @@
             }, 1000);
           };
 
-          // Función segura para cerrar modales y formularios
           const submitLead = async (e) => {
             e.preventDefault();
-            if (!user) { alert("Aún no hay conexión segura con el servidor. Espera 5 segundos."); return; }
+            if (!user) { alert("Conectando... espera 2 seg."); return; }
             setLoading(true);
-            
+            setErrorMessage('');
+
+            // Validación simple
+            if (!formData.email.includes('@')) {
+                setErrorMessage("Email incorrecto"); setLoading(false); return;
+            }
+
             try {
-               // Validación básica
-               if(!formData.email.includes('@')) throw new Error("Correo inválido");
-               
-               await addDoc(collection(db, 'leads'), {
+              await addDoc(collection(db, 'leads'), {
                 name: formData.name,
                 email: formData.email.toLowerCase(),
                 uid: user.uid,
@@ -172,8 +190,11 @@
               });
               setMessageData('');
               setShowThanksModal(false);
-            } catch (err) { alert("Error al enviar mensaje: " + err.message); } 
-            finally { setLoading(false); }
+            } catch (err) {
+              alert("Error al enviar mensaje");
+            } finally {
+              setLoading(false);
+            }
           };
 
           const totalEchos = leads.length;
@@ -189,11 +210,11 @@
               </header>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mb-12">
-                <div className="bg-white rounded-3xl p-6 text-center shadow-lg transform hover:scale-105 transition-all">
+                <div className="bg-white rounded-3xl p-6 text-center shadow-[0_10px_20px_rgba(0,0,0,0.2)] transform hover:scale-105 transition-all">
                   <div className="font-lilita text-6xl text-[#0098d9]">{workshops}</div>
                   <div className="text-[#116cc5] text-xl font-bold uppercase tracking-wide">Talleres Logrados</div>
                 </div>
-                <div className="bg-white rounded-3xl p-6 text-center shadow-lg transform hover:scale-105 transition-all">
+                <div className="bg-white rounded-3xl p-6 text-center shadow-[0_10px_20px_rgba(0,0,0,0.2)] transform hover:scale-105 transition-all">
                   <div className="font-lilita text-6xl text-[#0098d9]">{totalEchos}</div>
                   <div className="text-[#116cc5] text-xl font-bold uppercase tracking-wide">Ecos Totales</div>
                 </div>
@@ -210,10 +231,16 @@
                 </div>
               </div>
 
-              <div className="relative mb-12 flex items-center justify-center h-72 md:h-96">
+              {/* CAMPANA Y ONDAS - AÑADIDO POINTER-EVENTS-NONE PARA EVITAR BLOQUEOS */}
+              <div className="relative mb-12 flex items-center justify-center h-72 md:h-96 pointer-events-none">
                 <div className="wave-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0.6s' }}></div>
-                <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 ${isSwinging ? 'bell-swing' : ''}`}>
+                
+                {/* La campana sí debe recibir clics, así que activamos pointer-events */}
+                <div 
+                    onClick={handleRing} 
+                    className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}
+                >
                    <svg width="250" height="250" viewBox="0 0 200 200" className="drop-shadow-2xl">
                     <defs>
                       <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -232,7 +259,11 @@
                 </div>
               </div>
 
-              <button onClick={handleRing} className="bg-[#ffd058] text-[#116cc5] font-lilita text-3xl px-12 py-5 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-16 border-b-8 border-[#d4af37]">
+              {/* BOTÓN PRINCIPAL - Z-INDEX ALTO PARA ASEGURAR CLIC */}
+              <button 
+                onClick={handleRing} 
+                className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-3xl px-12 py-5 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-16 border-b-8 border-[#d4af37]"
+              >
                 ¡HACER SONAR!
               </button>
 
@@ -271,6 +302,8 @@
                     <div className="text-6xl mb-4">🔔</div>
                     <h2 className="text-[#116cc5] font-lilita text-3xl mb-2">¡Tu eco ya resuena!</h2>
                     <p className="text-gray-500 mb-6 text-sm">Completa tus datos para sumarlo a la meta</p>
+                    
+                    {errorMessage && <div className="bg-red-100 text-red-600 p-2 rounded mb-4 text-xs font-bold">{errorMessage}</div>}
                     
                     <form onSubmit={submitLead} className="space-y-4">
                       <input type="text" placeholder="Tu nombre" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 outline-none focus:border-[#0098d9] text-gray-700" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
