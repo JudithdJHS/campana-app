@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toca la Campana - Fundación</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCO9aonuABDfwjRjmUTKnPGgKRfNVP5VjU",
+            authDomain: "campana-fundacion.firebaseapp.com",
+            projectId: "campana-fundacion",
+            storageBucket: "campana-fundacion.firebasestorage.app",
+            messagingSenderId: "641556114718",
+            appId: "1:641556114718:web:0de23bcb20481b19a86d0f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.startApp = () => {
+            const { useState, useEffect, useRef } = React;
+
+            const App = () => {
+                const [leads, setLeads] = useState([]);
+                const [messages, setMessages] = useState([]);
+                const [isSwinging, setIsSwinging] = useState(false);
+                const [showLeadModal, setShowLeadModal] = useState(false);
+                const [formData, setFormData] = useState({ name: '', email: '' });
+
+                useEffect(() => {
+                    signInAnonymously(auth);
+                    const unsubLeads = onSnapshot(collection(db, 'leads'), (snap) => {
+                        setLeads(snap.docs.map(doc => doc.data()));
+                    });
+                    const unsubMsgs = onSnapshot(collection(db, 'messages'), (snap) => {
+                        setMessages(snap.docs.map(doc => doc.data()));
+                    });
+                    return () => { unsubLeads(); unsubMsgs(); };
+                }, []);
+
+                const handleRing = () => {
+                    setIsSwinging(true);
+                    setTimeout(() => { setIsSwinging(false); setShowLeadModal(true); }, 1200);
+                };
+
+                const progress = leads.length % 100;
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-b from-[#0098d9] to-[#116cc5] p-4 text-white font-sans flex flex-col items-center">
+                        <h1 className="text-5xl font-bold mt-10 mb-4 text-center">Toca la Campana</h1>
+                        <p className="text-xl mb-8">Cada eco financia arteterapia infantil 🎨</p>
+
+                        {/* Barra de Progreso */}
+                        <div className="w-full max-w-md bg-white/20 rounded-full h-8 mb-12 relative overflow-hidden">
+                            <div className="bg-yellow-400 h-full transition-all duration-1000" style={{width: `${progress}%`}}></div>
+                            <span className="absolute inset-0 flex items-center justify-center text-sm font-bold">Faltan {100-progress} ecos</span>
+                        </div>
+
+                        {/* Campana */}
+                        <div onClick={handleRing} className={`cursor-pointer text-8xl mb-10 transition-transform ${isSwinging ? 'animate-bounce' : 'hover:scale-110'}`}>
+                            🔔
+                        </div>
+
+                        <button onClick={handleRing} className="bg-yellow-400 text-blue-900 font-bold py-4 px-12 rounded-full text-2xl shadow-2xl hover:bg-yellow-300 transition-all">
+                            ¡HACER SONAR!
+                        </button>
+
+                        {/* Mural Simple */}
+                        <div className="mt-16 w-full max-w-2xl text-center">
+                            <h2 className="text-2xl font-bold mb-4">Mural de Esperanza 💌</h2>
+                            <div className="flex flex-wrap justify-center gap-4">
+                                {messages.map((m, i) => (
+                                    <div key={i} className="bg-white text-gray-800 p-3 rounded-lg shadow-md transform rotate-2 italic">
+                                        "{m.text}"
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Modal */}
+                        {showLeadModal && (
+                            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                                <div className="bg-white text-gray-800 p-8 rounded-3xl max-w-sm w-full">
+                                    <h2 className="text-2xl font-bold mb-4 text-blue-600">¡Tu eco cuenta!</h2>
+                                    <input type="text" placeholder="Tu nombre" className="w-full border p-3 rounded-xl mb-3" />
+                                    <input type="email" placeholder="tu@email.com" className="w-full border p-3 rounded-xl mb-4" />
+                                    <button onClick={() => setShowLeadModal(false)} className="w-full bg-blue-500 text-white py-3 rounded-xl font-bold">Confirmar</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        };
+
+        window.startApp();
+    </script>
+</body>
+</html>
