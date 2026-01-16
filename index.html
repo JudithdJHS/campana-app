@@ -8,7 +8,7 @@
     <!-- 1. Estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. Importaciones (LAS QUE FUNCIONAN) -->
+    <!-- 2. Importaciones -->
     <script type="importmap">
     {
       "imports": {
@@ -42,10 +42,6 @@
             pointer-events: none;
             z-index: 0;
         }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -111,22 +107,23 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
-          // --- NUEVO SONIDO MEJORADO (Tin-Tin-Tin-Tin) ---
-          const playBellSound = () => {
+          // --- SONIDO CORREGIDO (Asíncrono para sonar a la primera) ---
+          const playBellSound = async () => {
             try {
+              // 1. Crear el contexto si no existe
               if (!audioContextRef.current) {
                  audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
               }
               const ctx = audioContextRef.current;
               
-              // Importante: Reactivar el audio si el navegador lo suspendió
+              // 2. IMPORTANTE: Esperar a que el navegador quite el "mute"
               if (ctx.state === 'suspended') {
-                ctx.resume();
+                await ctx.resume();
               }
               
               const now = ctx.currentTime;
               
-              // Repetir 4 veces
+              // 3. Programar los sonidos (2000Hz para que se oiga bien)
               [0, 0.2, 0.4, 0.6].forEach((offset, i) => {
                   const t = now + offset;
                   const osc = ctx.createOscillator();
@@ -135,27 +132,26 @@
                   osc.connect(gain);
                   gain.connect(ctx.destination);
 
-                  // Frecuencia más alta (2000Hz) para sonido "campanilla"
                   osc.frequency.setValueAtTime(2000 + (i * 50), t); 
-                  osc.type = 'sine'; // Onda senoidal pura
+                  osc.type = 'sine'; 
 
-                  // Golpe seco y rápido
                   gain.gain.setValueAtTime(0, t);
-                  gain.gain.linearRampToValueAtTime(0.6, t + 0.01); // Subida rápida (golpe)
-                  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3); // Bajada suave
+                  gain.gain.linearRampToValueAtTime(0.6, t + 0.01); 
+                  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
 
                   osc.start(t);
                   osc.stop(t + 0.35);
               });
 
             } catch (e) {
-                console.log("Audio bloqueado por el navegador.");
+                console.log("Audio no permitido por el navegador.");
             }
           };
 
           const handleRing = () => {
-            console.log("¡Ding Dong!"); 
             setIsSwinging(true);
+            
+            // Llamamos al sonido (ahora espera a estar listo antes de sonar)
             playBellSound();
             
             setTimeout(() => setIsSwinging(false), 1200);
@@ -271,7 +267,7 @@
                 </div>
               </div>
 
-              {/* BOTÓN CON Z-INDEX PARA ASEGURAR CLIC */}
+              {/* BOTÓN */}
               <button 
                 onClick={handleRing} 
                 className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-3xl px-12 py-5 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-16 border-b-8 border-[#d4af37]"
