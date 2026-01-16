@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaña Fundación - Toca la Campana</title>
+    
+    <!-- Estilos y Herramientas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="importmap">
     {
@@ -17,21 +19,27 @@
     }
     </script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Quicksand:wght@400;600;700&display=swap');
         .font-lilita { font-family: 'Lilita One', cursive; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
-        body { background-color: #0098d9; }
+        body { background-color: #0098d9; overflow-x: hidden; }
+        
+        /* Animaciones */
         @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(-18deg); } 75% { transform: rotate(12deg); } }
         .bell-swing { animation: swing 1.2s ease-in-out; transform-origin: top center; }
+        
         @keyframes wave { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.8); opacity: 0; } }
         .wave-ring { border-radius: 50%; border: 4px solid rgba(255, 215, 0, 0.4); position: absolute; animation: wave 2s infinite; }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
+
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
@@ -41,16 +49,17 @@
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
-        // --- TUS DATOS DE FIREBASE AQUÍ (Reemplaza con los tuyos) ---
+        // --- TUS DATOS DE FIREBASE CONFIGURADOS CORRECTAMENTE ---
         const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            projectId: "TU_PROYECTO_ID",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TUS_NUMEROS",
-            appId: "TU_APP_ID"
+          apiKey: "AIzaSyCO9aonuABDfwjRjmUTKnPGgKRfNVP5VjU",
+          authDomain: "campana-fundacion.firebaseapp.com",
+          projectId: "campana-fundacion",
+          storageBucket: "campana-fundacion.firebasestorage.app",
+          messagingSenderId: "641556114718",
+          appId: "1:641556114718:web:0de23bcb20481b19a86d0f"
         };
 
+        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -69,27 +78,34 @@
           
           const audioContextRef = useRef(null);
 
-          // 1. Autenticación Anónima
+          // 1. Autenticación (Entrada Anónima)
           useEffect(() => {
             signInAnonymously(auth).catch((error) => {
                 console.error("Error Auth:", error);
-                alert("Error conectando con Firebase Auth: " + error.message);
+                // Si esto falla, es porque no está habilitado "Anónimo" en la consola de Firebase
+                alert("Error de conexión: Revisa si habilitaste la autenticación 'Anónima' en Firebase Console.");
             });
             return onAuthStateChanged(auth, setUser);
           }, []);
 
-          // 2. Escuchar Datos (Estructura simplificada)
+          // 2. Escuchar la Base de Datos
           useEffect(() => {
-            const leadsRef = collection(db, 'leads'); // Carpeta raíz simple
-            const msgsRef = collection(db, 'messages'); // Carpeta raíz simple
+            // Referencias directas a las colecciones
+            const leadsRef = collection(db, 'leads');
+            const msgsRef = collection(db, 'messages');
 
+            // Actualizar contadores en tiempo real
             const unsubLeads = onSnapshot(leadsRef, (snapshot) => {
-              setLeads(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+              const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+              setLeads(data);
+            }, (error) => {
+                console.log("Esperando permisos...", error);
             });
 
+            // Actualizar mensajes en tiempo real
             const unsubMsgs = onSnapshot(msgsRef, (snapshot) => {
               const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-              // Ordenar por fecha (el más nuevo primero)
+              // Ordenar: el más reciente primero
               data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
               setMessages(data);
             });
@@ -97,13 +113,15 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
-          // Sonido
+          // Sonido de Campana
           const playBellSound = () => {
             try {
               if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
               const ctx = audioContextRef.current;
               if (ctx.state === 'suspended') ctx.resume();
               const now = ctx.currentTime;
+              
+              // 4 repiques (tin-tin-tin-tin)
               for (let i = 0; i < 4; i++) {
                 const startTime = now + (i * 0.2); 
                 const osc = ctx.createOscillator();
@@ -133,9 +151,10 @@
 
           const validateEmail = (email) => String(email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
+          // Guardar Lead (Nombre y Correo)
           const submitLead = async (e) => {
             e.preventDefault();
-            if (!user) { alert("Esperando conexión... intenta de nuevo en unos segundos."); return; }
+            if (!user) { alert("Conectando con el servidor... intenta en 5 segundos."); return; }
             setLoading(true);
             setErrorMessage('');
 
@@ -143,13 +162,11 @@
               setErrorMessage("Correo inválido."); setLoading(false); return;
             }
 
-            // Comprobación simple de duplicados localmente
             if (leads.some(l => l.email?.toLowerCase() === formData.email.toLowerCase())) {
                setErrorMessage("¡Ya registraste tu eco! Gracias."); setLoading(false); return;
             }
 
             try {
-              // Guardar en colección simple 'leads'
               await addDoc(collection(db, 'leads'), {
                 name: formData.name,
                 email: formData.email.toLowerCase(),
@@ -160,18 +177,18 @@
               setShowThanksModal(true);
             } catch (err) {
               console.error(err);
-              alert("Error al guardar: " + err.message + "\n\nRevisa las 'Reglas' en Firebase Console.");
+              alert("Error al guardar. Verifica que las 'Reglas' de Firebase estén en modo público.");
             } finally {
               setLoading(false);
             }
           };
 
+          // Guardar Mensaje del Mural
           const submitMessage = async (e) => {
             e.preventDefault();
             if (!user || !messageData.trim()) return;
             setLoading(true);
             try {
-              // Guardar en colección simple 'messages'
               await addDoc(collection(db, 'messages'), {
                 name: formData.name || 'Anónimo',
                 message: messageData,
