@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaña Fundación - Toca la Campana</title>
     
-    <!-- 1. Estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. Importaciones -->
     <script type="importmap">
     {
       "imports": {
@@ -28,19 +26,32 @@
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
         body { background-color: #0098d9; overflow-x: hidden; }
         
+        /* Animación de la campana */
         @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(-18deg); } 75% { transform: rotate(12deg); } }
         .bell-swing { animation: swing 1.2s ease-in-out; transform-origin: top center; }
         
+        /* Animación de las ondas */
         @keyframes wave { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.8); opacity: 0; } }
-        
         .wave-ring { 
-            border-radius: 50%; 
-            border: 4px solid rgba(255, 215, 0, 0.4); 
-            position: absolute; 
-            animation: wave 2s infinite;
-            pointer-events: none;
-            z-index: 0;
+            border-radius: 50%; border: 4px solid rgba(255, 215, 0, 0.4); 
+            position: absolute; animation: wave 2s infinite; pointer-events: none; z-index: 0;
         }
+
+        /* --- NUEVO: ANIMACIÓN DE DESTELLOS (CONFETI) --- */
+        @keyframes pop-out {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(1.2); opacity: 0; }
+        }
+        .confetti-piece {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .animate-pop { animation: pop-out 1s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -54,7 +65,7 @@
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
-        // TUS CLAVES REALES
+        // TUS CLAVES
         const firebaseConfig = {
           apiKey: "AIzaSyCO9aonuABDfwjRjmUTKnPGgKRfNVP5VjU",
           authDomain: "campana-fundacion.firebaseapp.com",
@@ -82,108 +93,63 @@
           
           const audioContextRef = useRef(null);
 
+          // Auth y Datos
           useEffect(() => {
-            signInAnonymously(auth).catch((error) => console.error("Error Auth:", error));
+            signInAnonymously(auth).catch(e => console.error(e));
             return onAuthStateChanged(auth, setUser);
           }, []);
 
           useEffect(() => {
-            const leadsRef = collection(db, 'leads');
-            const msgsRef = collection(db, 'messages');
-
-            const unsubLeads = onSnapshot(leadsRef, (snapshot) => {
-              setLeads(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            const unsubLeads = onSnapshot(collection(db, 'leads'), s => setLeads(s.docs.map(d => ({id:d.id, ...d.data()}))));
+            const unsubMsgs = onSnapshot(collection(db, 'messages'), s => {
+                const data = s.docs.map(d => ({id:d.id, ...d.data()}));
+                setMessages(data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)));
             });
-
-            const unsubMsgs = onSnapshot(msgsRef, (snapshot) => {
-              const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-              data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-              setMessages(data);
-            });
-
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
+          // Sonido
           const playBellSound = async () => {
             try {
-              if (!audioContextRef.current) {
-                 audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-              }
+              if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
               const ctx = audioContextRef.current;
-              
-              if (ctx.state === 'suspended') {
-                await ctx.resume();
-              }
-              
+              if (ctx.state === 'suspended') await ctx.resume();
               const now = ctx.currentTime;
-              
               [0, 0.2, 0.4, 0.6].forEach((offset, i) => {
                   const t = now + offset;
                   const osc = ctx.createOscillator();
                   const gain = ctx.createGain();
-
-                  osc.connect(gain);
-                  gain.connect(ctx.destination);
-
-                  osc.frequency.setValueAtTime(2000 + (i * 50), t); 
-                  osc.type = 'sine'; 
-
+                  osc.connect(gain); gain.connect(ctx.destination);
+                  osc.frequency.setValueAtTime(2000 + (i * 50), t); osc.type = 'sine'; 
                   gain.gain.setValueAtTime(0, t);
                   gain.gain.linearRampToValueAtTime(0.6, t + 0.01); 
                   gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-
-                  osc.start(t);
-                  osc.stop(t + 0.35);
+                  osc.start(t); osc.stop(t + 0.35);
               });
-
-            } catch (e) {
-                console.log("Audio no permitido por el navegador.");
-            }
+            } catch (e) { console.log("Audio error"); }
           };
 
           const handleRing = () => {
             setIsSwinging(true);
             playBellSound();
-            
             setTimeout(() => setIsSwinging(false), 1200);
-            setTimeout(() => {
-              setErrorMessage('');
-              setShowLeadModal(true);
-            }, 1000);
+            setTimeout(() => { setErrorMessage(''); setShowLeadModal(true); }, 1000);
           };
 
           const submitLead = async (e) => {
             e.preventDefault();
-            if (!user) { alert("Conectando... espera 2 seg."); return; }
-            setLoading(true);
-            setErrorMessage('');
-
-            if (!formData.email.includes('@')) {
-                setErrorMessage("Email incorrecto"); setLoading(false); return;
+            if (!user) return;
+            setLoading(true); setErrorMessage('');
+            if (!formData.email.includes('@')) { setErrorMessage("Email incorrecto"); setLoading(false); return; }
+            if (leads.some(l => l.email?.toLowerCase() === formData.email.toLowerCase())) {
+                setErrorMessage("¡Este correo ya registró su eco! Gracias 💜"); setLoading(false); return;
             }
-
-            const emailExists = leads.some(lead => lead.email?.toLowerCase() === formData.email.toLowerCase());
-            
-            if (emailExists) {
-                setErrorMessage("¡Este correo ya registró su eco! Gracias 💜");
-                setLoading(false);
-                return;
-            }
-
             try {
               await addDoc(collection(db, 'leads'), {
-                name: formData.name,
-                email: formData.email.toLowerCase(),
-                uid: user.uid,
-                timestamp: serverTimestamp(),
+                name: formData.name, email: formData.email.toLowerCase(), uid: user.uid, timestamp: serverTimestamp(),
               });
-              setShowLeadModal(false);
-              setShowThanksModal(true);
-            } catch (err) {
-              alert("Error al guardar: " + err.message);
-            } finally {
-              setLoading(false);
-            }
+              setShowLeadModal(false); setShowThanksModal(true);
+            } catch (err) { alert("Error"); } finally { setLoading(false); }
           };
 
           const submitMessage = async (e) => {
@@ -192,88 +158,70 @@
             setLoading(true);
             try {
               await addDoc(collection(db, 'messages'), {
-                name: formData.name || 'Anónimo',
-                message: messageData,
-                timestamp: serverTimestamp(),
+                name: formData.name || 'Anónimo', message: messageData, timestamp: serverTimestamp(),
               });
-              setMessageData('');
-              setShowThanksModal(false);
-            } catch (err) {
-              alert("Error al enviar mensaje");
-            } finally {
-              setLoading(false);
-            }
+              setMessageData(''); setShowThanksModal(false);
+            } catch (err) { alert("Error"); } finally { setLoading(false); }
           };
 
           const totalEchos = leads.length;
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
+          // Datos para los destellos (Posiciones aleatorias fijas)
+          const particles = [
+            {x: '-100px', y: '-80px', color: '#FFD700'}, {x: '100px', y: '-80px', color: '#FF69B4'},
+            {x: '-80px', y: '20px', color: '#87CEEB'},   {x: '80px', y: '20px', color: '#FFD700'},
+            {x: '-120px', y: '-40px', color: '#FF69B4'}, {x: '120px', y: '-40px', color: '#87CEEB'},
+            {x: '0px', y: '-120px', color: '#FFF'},      {x: '0px', y: '-150px', color: '#FFD700'}
+          ];
+
           return (
             <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-10">
               
-              {/* HEADER CON LOGO */}
-              <header className="text-center mb-6 mt-4 animate-in fade-in slide-in-from-top duration-700 w-full max-w-2xl px-4">
-                
-                <img 
-                    src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" 
-                    alt="Fundación Abraza un Sueño" 
-                    className="h-28 md:h-36 mx-auto mb-4 object-contain drop-shadow-md" 
-                />
-
+              <header className="text-center mb-6 mt-4 w-full max-w-2xl px-4">
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" alt="Logo" className="h-28 md:h-36 mx-auto mb-4 object-contain drop-shadow-md" />
                 <h1 className="font-lilita text-5xl md:text-6xl mb-3 drop-shadow-xl text-[#ffd058]" style={{textShadow: '2px 2px 0px #116cc5'}}>Toca la Campana</h1>
-                
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                    {/* TEXTO AGRANDADO: text-base en móvil */}
-                    <p className="text-base md:text-lg font-quicksand font-medium leading-tight mb-2 opacity-95">
-                        Haz que la esperanza también suene para otros niños que continúan su lucha.
-                    </p>
-                    {/* TEXTO AGRANDADO: text-sm en móvil */}
-                    <p className="text-sm md:text-base font-quicksand font-bold text-[#ffd058] uppercase tracking-wide">
-                        Cada 20 campanadas, un niño recibe un kit de arteterapia 🎨
-                    </p>
+                    <p className="text-base md:text-lg font-quicksand font-medium leading-tight mb-2 opacity-95">Haz que la esperanza también suene para otros niños que continúan su lucha.</p>
+                    <p className="text-sm md:text-base font-quicksand font-bold text-[#ffd058] uppercase tracking-wide">Cada 20 campanadas, un niño recibe un kit de arteterapia 🎨</p>
                 </div>
               </header>
 
-              {/* CONTADORES */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl mb-6">
-                <div className="bg-white rounded-2xl p-4 text-center shadow-lg transform hover:scale-105 transition-all">
-                  {/* NÚMERO AGRANDADO */}
-                  <div className="font-lilita text-5xl md:text-6xl text-[#0098d9]">{workshops}</div>
-                  <div className="text-[#116cc5] text-base font-bold uppercase tracking-wide">Talleres Logrados</div>
-                </div>
-                <div className="bg-white rounded-2xl p-4 text-center shadow-lg transform hover:scale-105 transition-all">
-                  <div className="font-lilita text-5xl md:text-6xl text-[#0098d9]">{totalEchos}</div>
-                  <div className="text-[#116cc5] text-base font-bold uppercase tracking-wide">Ecos Totales</div>
-                </div>
+                <div className="bg-white rounded-2xl p-4 text-center shadow-lg"><div className="font-lilita text-5xl md:text-6xl text-[#0098d9]">{workshops}</div><div className="text-[#116cc5] text-base font-bold uppercase">Talleres Logrados</div></div>
+                <div className="bg-white rounded-2xl p-4 text-center shadow-lg"><div className="font-lilita text-5xl md:text-6xl text-[#0098d9]">{totalEchos}</div><div className="text-[#116cc5] text-base font-bold uppercase">Ecos Totales</div></div>
               </div>
 
-              {/* BARRA DE PROGRESO */}
               <div className="w-full max-w-2xl mb-8 px-2">
                 <div className="bg-[#116cc5]/30 backdrop-blur-md rounded-full p-1.5 border border-white/20">
                   <div className="bg-white/20 h-10 rounded-full overflow-hidden relative">
                     <div className="h-full bg-gradient-to-r from-[#ffd058] to-[#ffb800]" style={{ width: `${(progress / 20) * 100}%`, transition: 'width 1s ease' }}></div>
-                    {/* TEXTO DE BARRA AGRANDADO */}
-                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-base md:text-lg">
-                      Faltan {20 - progress} ecos para el próximo taller
-                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-base md:text-lg">Faltan {20 - progress} ecos para el próximo taller</div>
                   </div>
                 </div>
               </div>
 
-              {/* CAMPANA */}
+              {/* --- CAMPANA CON DESTELLOS --- */}
               <div className="relative mb-6 flex items-center justify-center h-48 md:h-60 pointer-events-none">
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
                 
+                {/* Partículas de Confetti */}
+                {isSwinging && particles.map((p, i) => (
+                    <div key={i} className="confetti-piece animate-pop" 
+                         style={{ 
+                             '--tw-translate-x': p.x, 
+                             '--tw-translate-y': p.y, 
+                             backgroundColor: p.color,
+                             animationDelay: `${i * 0.05}s`
+                         }}>
+                    </div>
+                ))}
+
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
                    <svg width="200" height="200" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[250px] md:h-[250px]">
-                    <defs>
-                      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style={{stopColor:'#ffd700'}} />
-                        <stop offset="100%" style={{stopColor:'#d4af37'}} />
-                      </linearGradient>
-                    </defs>
+                    <defs><linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor:'#ffd700'}} /><stop offset="100%" style={{stopColor:'#d4af37'}} /></linearGradient></defs>
                     <g transform="translate(100, 50)">
                       <rect x="-5" y="-20" width="10" height="25" rx="3" fill="#d4af37" />
                       <path d="M -50 80 Q -50 20 0 0 Q 50 20 50 80 Z" fill="url(#goldGrad)" />
@@ -285,102 +233,70 @@
                 </div>
               </div>
 
-              {/* BOTÓN */}
-              <button 
-                onClick={handleRing} 
-                className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-2xl md:text-4xl px-10 py-4 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-10 border-b-8 border-[#d4af37]"
-              >
-                ¡HACER SONAR!
-              </button>
+              <button onClick={handleRing} className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-2xl md:text-4xl px-10 py-4 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-10 border-b-8 border-[#d4af37]">¡HACER SONAR!</button>
 
-              {/* TARJETA SIGNIFICADO */}
               <div className="w-full max-w-2xl px-4 mb-10 animate-in fade-in slide-in-from-bottom duration-1000">
                 <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 text-center shadow-lg border-2 border-white/20">
-                    
-                    <img 
-                        src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/ARTETERAPIA-FAUS-.png" 
-                        alt="Niños disfrutando arteterapia" 
-                        className="w-full h-56 md:h-64 object-cover rounded-xl mb-6 shadow-md"
-                    />
-
-                    {/* TEXTO TARJETA AGRANDADO */}
-                    <p className="text-[#116cc5] font-quicksand text-base md:text-lg leading-relaxed mb-4 text-left md:text-center">
-                        <strong className="font-bold text-xl block mb-2 text-center">Tocar la campana significa haber ganado una batalla contra el cáncer.</strong>
+                    <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/ARTETERAPIA-FAUS-.png" alt="Niños" className="w-full h-56 md:h-64 object-cover rounded-xl mb-6 shadow-md" />
+                    <p className="text-[#116cc5] font-quicksand text-base md:text-lg leading-relaxed mb-4">
+                        <strong className="font-bold text-xl block mb-2">Tocar la campana significa haber ganado una batalla contra el cáncer.</strong>
                         En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento.
-                        No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
                     </p>
-                    <p className="text-[#0098d9] font-quicksand text-base md:text-lg font-semibold italic mt-4">
-                        "Y cuando suena, deja una certeza en el aire:
-                        la esperanza es real… y puede volver a sonar para otros niños."
-                    </p>
+                    <p className="text-[#0098d9] font-quicksand text-base md:text-lg font-semibold italic">"Y cuando suena, deja una certeza en el aire: la esperanza es real… y puede volver a sonar para otros niños."</p>
                 </div>
               </div>
 
-              {/* MURAL */}
               <div className="w-full max-w-4xl mb-10 px-2">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                    <h2 className="font-lilita text-3xl md:text-4xl text-white drop-shadow-md">Mural de Esperanza</h2>
-                    <span className="text-3xl">💌</span>
-                </div>
-                
+                <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-white drop-shadow-md">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-[20px] p-4 border border-white/20 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
-                  {messages.length === 0 ? (
-                    <div className="text-center text-white/70 font-quicksand text-lg italic py-8">
-                      <p>Aún no hay mensajes.</p>
-                      <p className="text-sm mt-1">¡Sé el primero en dejar uno!</p>
-                    </div>
-                  ) : (
+                  {messages.length === 0 ? <div className="text-center text-white/70 font-quicksand text-lg italic py-8">Aún no hay mensajes.</div> : 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {messages.map((m, idx) => {
-                        const rotateClass = idx % 2 === 0 ? 'rotate-1' : '-rotate-1';
-                        return (
-                          <div key={idx} className={`bg-white p-5 rounded-lg shadow-md transform ${rotateClass} hover:rotate-0 transition-all hover:z-10`}>
-                            <div className="flex justify-between mb-2 border-b border-gray-100 pb-1">
-                              {/* NOMBRE EN EL MURAL AGRANDADO */}
-                              <span className="font-bold text-[#116cc5] uppercase text-xs tracking-wider truncate mr-2">{m.name}</span>
-                              <span className="text-red-400 text-xs">📌</span>
-                            </div>
-                            {/* MENSAJE MURAL AGRANDADO */}
-                            <p className="text-gray-600 font-quicksand italic text-sm leading-relaxed line-clamp-6">"{m.message}"</p>
-                          </div>
-                        );
-                      })}
+                      {messages.map((m, idx) => (
+                        <div key={idx} className={`bg-white p-5 rounded-lg shadow-md transform ${idx % 2 === 0 ? 'rotate-1' : '-rotate-1'} hover:rotate-0 transition-all hover:z-10`}>
+                            <div className="flex justify-between mb-2 border-b border-gray-100 pb-1"><span className="font-bold text-[#116cc5] uppercase text-xs tracking-wider truncate mr-2">{m.name}</span><span className="text-red-400 text-xs">📌</span></div>
+                            <p className="text-gray-600 font-quicksand italic text-xs leading-relaxed line-clamp-6">"{m.message}"</p>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  }
                 </div>
               </div>
 
-              {/* PIE DE PÁGINA */}
-              <div className="w-full max-w-xl px-2">
-                  <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
-                    {/* TEXTO PIE DE PÁGINA AGRANDADO */}
-                    <p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
-                        <span>🎨</span>
-                        <span>Cada eco financia alegría y terapia para los niños</span>
-                        <span>💜</span>
-                    </p>
-                  </div>
-              </div>
+              <div className="w-full max-w-xl px-2"><div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all"><p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2"><span>🎨</span><span>Cada eco financia alegría y terapia para los niños</span><span>💜</span></p></div></div>
 
-              {/* Modales */}
+              {/* --- NUEVO DISEÑO DE MODAL "MI ECO" --- */}
               {showLeadModal && (
                 <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
-                  <div className="bg-white rounded-[20px] p-6 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in duration-300">
-                    <button onClick={() => setShowLeadModal(false)} className="absolute top-3 right-3 text-gray-400 text-2xl">&times;</button>
-                    <div className="text-5xl mb-2">🔔</div>
-                    <h2 className="text-[#116cc5] font-lilita text-3xl mb-1">¡Tu eco suena!</h2>
-                    <p className="text-gray-500 mb-6 text-base">Completa tus datos para sumar</p>
+                  <div className="bg-white rounded-[30px] w-full max-w-md shadow-2xl relative overflow-hidden animate-in zoom-in duration-300">
                     
-                    {errorMessage && <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-sm font-bold">{errorMessage}</div>}
-                    
-                    <form onSubmit={submitLead} className="space-y-4">
-                      {/* INPUTS AGRANDADOS A text-base */}
-                      <input type="text" placeholder="Tu nombre" className="w-full bg-gray-50 border-2 border-gray-100 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] text-gray-700 text-base" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
-                      <input type="email" placeholder="tu@email.com" className="w-full bg-gray-50 border-2 border-gray-100 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] text-gray-700 text-base" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-                      <button type="submit" disabled={loading} className="w-full bg-[#116cc5] text-white font-bold py-3 rounded-lg hover:bg-[#005bb5] transition-colors shadow-md text-lg">
-                        {loading ? '...' : 'Confirmar'}
-                      </button>
-                    </form>
+                    {/* ENCABEZADO AZUL */}
+                    <div className="bg-[#0098d9] p-8 text-center relative">
+                        <button onClick={() => setShowLeadModal(false)} className="absolute top-4 right-4 text-white/70 hover:text-white text-3xl font-bold">&times;</button>
+                        <div className="text-6xl mb-2 filter drop-shadow-md">💛</div>
+                        <h2 className="text-white font-lilita text-4xl mb-1 drop-shadow-md">¡Tu eco ya resuena!</h2>
+                        <p className="text-white/90 text-lg font-quicksand">Confirma tus datos para que sume oficialmente</p>
+                    </div>
+
+                    {/* CUERPO BLANCO */}
+                    <div className="p-8 bg-white">
+                        {errorMessage && <div className="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm font-bold text-center">{errorMessage}</div>}
+                        
+                        <form onSubmit={submitLead} className="space-y-5">
+                            <div>
+                                <label className="block text-gray-700 font-bold mb-2 ml-1">Tu nombre</label>
+                                <input type="text" placeholder="¿Cómo te llamas?" className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-5 py-3 outline-none focus:border-[#0098d9] focus:bg-white text-gray-700 text-lg transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 font-bold mb-2 ml-1">Tu email</label>
+                                <input type="email" placeholder="correo@ejemplo.com" className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-5 py-3 outline-none focus:border-[#0098d9] focus:bg-white text-gray-700 text-lg transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+                            </div>
+                            
+                            {/* BOTÓN AMARILLO GRANDE */}
+                            <button type="submit" disabled={loading} className="w-full bg-[#ffd058] text-[#116cc5] font-lilita text-2xl py-4 rounded-xl hover:bg-[#ffb800] transition-transform active:scale-95 shadow-xl uppercase tracking-wide border-b-4 border-[#d4af37]">
+                                {loading ? '...' : '¡CONFIRMAR MI ECO!'}
+                            </button>
+                        </form>
+                    </div>
                   </div>
                 </div>
               )}
@@ -392,18 +308,10 @@
                     <h2 className="text-[#116cc5] font-lilita text-3xl mb-1">¡Gracias!</h2>
                     <p className="text-gray-500 mb-6 text-base">Deja un mensaje en el mural</p>
                     <form onSubmit={submitMessage}>
-                      {/* TEXTAREA AGRANDADO text-base */}
-                      <textarea 
-                        className="w-full bg-[#116cc5] border-none rounded-lg p-4 text-white placeholder-white/70 mb-4 focus:ring-2 focus:ring-[#ffd058] outline-none h-32 resize-none text-base" 
-                        placeholder="Escribe algo bonito..." 
-                        value={messageData} 
-                        onChange={e => setMessageData(e.target.value)}
-                      ></textarea>
+                      <textarea className="w-full bg-[#116cc5] border-none rounded-lg p-4 text-white placeholder-white/70 mb-4 focus:ring-2 focus:ring-[#ffd058] outline-none h-32 resize-none text-base" placeholder="Escribe algo bonito..." value={messageData} onChange={e => setMessageData(e.target.value)}></textarea>
                       <div className="flex gap-2">
                         <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-3 text-gray-400 font-bold text-base">Saltar</button>
-                        <button type="submit" disabled={loading} className="flex-1 bg-[#ffd058] text-[#116cc5] font-bold py-3 rounded-lg hover:bg-[#ffb800] shadow-md text-base">
-                          {loading ? '...' : 'Publicar'}
-                        </button>
+                        <button type="submit" disabled={loading} className="flex-1 bg-[#ffd058] text-[#116cc5] font-bold py-3 rounded-lg hover:bg-[#ffb800] shadow-md text-base">Publicar</button>
                       </div>
                     </form>
                   </div>
