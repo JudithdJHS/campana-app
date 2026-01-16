@@ -211,21 +211,16 @@
           const progress = totalEchos % 100;
 
           return (
-            /* REDUCCIÓN DE PADDING GENERAL (pb-8) */
             <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-8">
               
-              {/* --- HEADER CON LOGO --- */}
+              {/* --- HEADER CON LOGO BLANCO REAL --- */}
               <header className="text-center mb-4 mt-2 animate-in fade-in slide-in-from-top duration-700 w-full max-w-2xl px-4">
                 
-                {/* LOGO DE LA FUNDACIÓN */}
                 <img 
-                    src="https://fundacionabrazaunsueno.com/wp-content/uploads/2025/10/FAUS.png" 
+                    src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" 
                     alt="Fundación Abraza un Sueño" 
-                    className="h-24 md:h-32 mx-auto mb-3 object-contain drop-shadow-md filter brightness-0 invert" 
+                    className="h-24 md:h-32 mx-auto mb-3 object-contain drop-shadow-md" 
                 />
-                
-                {/* Nota: He añadido 'filter brightness-0 invert' para que el logo se vea blanco sobre el fondo azul. 
-                   Si prefieres el color original, borra 'filter brightness-0 invert' de la línea de arriba */}
 
                 <h1 className="font-lilita text-4xl md:text-5xl mb-3 drop-shadow-xl text-[#ffd058]" style={{textShadow: '2px 2px 0px #116cc5'}}>Toca la Campana</h1>
                 
