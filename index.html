@@ -162,7 +162,6 @@
                 setErrorMessage("Email incorrecto"); setLoading(false); return;
             }
 
-            // --- PROTECCIÓN DUPLICADOS ---
             const emailExists = leads.some(lead => lead.email?.toLowerCase() === formData.email.toLowerCase());
             
             if (emailExists) {
@@ -207,52 +206,55 @@
           };
 
           const totalEchos = leads.length;
-          // META 20 ECOS
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
           return (
-            <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-8">
+            <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-10">
               
-              {/* HEADER */}
-              <header className="text-center mb-4 mt-2 animate-in fade-in slide-in-from-top duration-700 w-full max-w-2xl px-4">
+              {/* HEADER CON LOGO */}
+              <header className="text-center mb-6 mt-4 animate-in fade-in slide-in-from-top duration-700 w-full max-w-2xl px-4">
                 
                 <img 
                     src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" 
                     alt="Fundación Abraza un Sueño" 
-                    className="h-24 md:h-32 mx-auto mb-3 object-contain drop-shadow-md" 
+                    className="h-28 md:h-36 mx-auto mb-4 object-contain drop-shadow-md" 
                 />
 
-                <h1 className="font-lilita text-4xl md:text-5xl mb-3 drop-shadow-xl text-[#ffd058]" style={{textShadow: '2px 2px 0px #116cc5'}}>Toca la Campana</h1>
+                <h1 className="font-lilita text-5xl md:text-6xl mb-3 drop-shadow-xl text-[#ffd058]" style={{textShadow: '2px 2px 0px #116cc5'}}>Toca la Campana</h1>
                 
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-                    <p className="text-sm md:text-base font-quicksand font-medium leading-tight mb-2 opacity-95">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                    {/* TEXTO AGRANDADO: text-base en móvil */}
+                    <p className="text-base md:text-lg font-quicksand font-medium leading-tight mb-2 opacity-95">
                         Haz que la esperanza también suene para otros niños que continúan su lucha.
                     </p>
-                    <p className="text-xs md:text-sm font-quicksand font-bold text-[#ffd058] uppercase tracking-wide">
+                    {/* TEXTO AGRANDADO: text-sm en móvil */}
+                    <p className="text-sm md:text-base font-quicksand font-bold text-[#ffd058] uppercase tracking-wide">
                         Cada 20 campanadas, un niño recibe un kit de arteterapia 🎨
                     </p>
                 </div>
               </header>
 
               {/* CONTADORES */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-3xl mb-4">
-                <div className="bg-white rounded-2xl p-3 text-center shadow-lg transform hover:scale-105 transition-all">
-                  <div className="font-lilita text-4xl text-[#0098d9]">{workshops}</div>
-                  <div className="text-[#116cc5] text-sm font-bold uppercase tracking-wide">Talleres Logrados</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl mb-6">
+                <div className="bg-white rounded-2xl p-4 text-center shadow-lg transform hover:scale-105 transition-all">
+                  {/* NÚMERO AGRANDADO */}
+                  <div className="font-lilita text-5xl md:text-6xl text-[#0098d9]">{workshops}</div>
+                  <div className="text-[#116cc5] text-base font-bold uppercase tracking-wide">Talleres Logrados</div>
                 </div>
-                <div className="bg-white rounded-2xl p-3 text-center shadow-lg transform hover:scale-105 transition-all">
-                  <div className="font-lilita text-4xl text-[#0098d9]">{totalEchos}</div>
-                  <div className="text-[#116cc5] text-sm font-bold uppercase tracking-wide">Ecos Totales</div>
+                <div className="bg-white rounded-2xl p-4 text-center shadow-lg transform hover:scale-105 transition-all">
+                  <div className="font-lilita text-5xl md:text-6xl text-[#0098d9]">{totalEchos}</div>
+                  <div className="text-[#116cc5] text-base font-bold uppercase tracking-wide">Ecos Totales</div>
                 </div>
               </div>
 
               {/* BARRA DE PROGRESO */}
-              <div className="w-full max-w-2xl mb-6 px-2">
+              <div className="w-full max-w-2xl mb-8 px-2">
                 <div className="bg-[#116cc5]/30 backdrop-blur-md rounded-full p-1.5 border border-white/20">
-                  <div className="bg-white/20 h-8 rounded-full overflow-hidden relative">
+                  <div className="bg-white/20 h-10 rounded-full overflow-hidden relative">
                     <div className="h-full bg-gradient-to-r from-[#ffd058] to-[#ffb800]" style={{ width: `${(progress / 20) * 100}%`, transition: 'width 1s ease' }}></div>
-                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-sm">
+                    {/* TEXTO DE BARRA AGRANDADO */}
+                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-base md:text-lg">
                       Faltan {20 - progress} ecos para el próximo taller
                     </div>
                   </div>
@@ -260,12 +262,12 @@
               </div>
 
               {/* CAMPANA */}
-              <div className="relative mb-4 flex items-center justify-center h-40 md:h-52 pointer-events-none">
-                <div className="wave-ring w-40 h-40 md:w-56 md:h-56" style={{ animationDelay: '0s' }}></div>
-                <div className="wave-ring w-40 h-40 md:w-56 md:h-56" style={{ animationDelay: '0.6s' }}></div>
+              <div className="relative mb-6 flex items-center justify-center h-48 md:h-60 pointer-events-none">
+                <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
+                <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
                 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
-                   <svg width="160" height="160" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[200px] md:h-[200px]">
+                   <svg width="200" height="200" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[250px] md:h-[250px]">
                     <defs>
                       <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style={{stopColor:'#ffd700'}} />
@@ -286,27 +288,28 @@
               {/* BOTÓN */}
               <button 
                 onClick={handleRing} 
-                className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-xl md:text-2xl px-8 py-3 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-8 border-b-4 border-[#d4af37]"
+                className="relative z-50 bg-[#ffd058] text-[#116cc5] font-lilita text-2xl md:text-4xl px-10 py-4 rounded-full shadow-xl hover:bg-[#ffb800] hover:scale-105 active:scale-95 transition-all mb-10 border-b-8 border-[#d4af37]"
               >
                 ¡HACER SONAR!
               </button>
 
-              {/* TARJETA SIGNIFICADO + FOTO */}
-              <div className="w-full max-w-2xl px-4 mb-8 animate-in fade-in slide-in-from-bottom duration-1000">
+              {/* TARJETA SIGNIFICADO */}
+              <div className="w-full max-w-2xl px-4 mb-10 animate-in fade-in slide-in-from-bottom duration-1000">
                 <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 text-center shadow-lg border-2 border-white/20">
                     
                     <img 
                         src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/ARTETERAPIA-FAUS-.png" 
                         alt="Niños disfrutando arteterapia" 
-                        className="w-full h-48 md:h-56 object-cover rounded-xl mb-4 shadow-md"
+                        className="w-full h-56 md:h-64 object-cover rounded-xl mb-6 shadow-md"
                     />
 
-                    <p className="text-[#116cc5] font-quicksand text-sm md:text-base leading-relaxed mb-4">
-                        <strong className="font-bold text-lg block mb-2">Tocar la campana significa haber ganado una batalla contra el cáncer.</strong>
+                    {/* TEXTO TARJETA AGRANDADO */}
+                    <p className="text-[#116cc5] font-quicksand text-base md:text-lg leading-relaxed mb-4 text-left md:text-center">
+                        <strong className="font-bold text-xl block mb-2 text-center">Tocar la campana significa haber ganado una batalla contra el cáncer.</strong>
                         En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento.
                         No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
                     </p>
-                    <p className="text-[#0098d9] font-quicksand text-sm md:text-base font-semibold italic">
+                    <p className="text-[#0098d9] font-quicksand text-base md:text-lg font-semibold italic mt-4">
                         "Y cuando suena, deja una certeza en el aire:
                         la esperanza es real… y puede volver a sonar para otros niños."
                     </p>
@@ -314,29 +317,31 @@
               </div>
 
               {/* MURAL */}
-              <div className="w-full max-w-4xl mb-8 px-2">
+              <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <h2 className="font-lilita text-2xl md:text-3xl text-white drop-shadow-md">Mural de Esperanza</h2>
-                    <span className="text-2xl">💌</span>
+                    <h2 className="font-lilita text-3xl md:text-4xl text-white drop-shadow-md">Mural de Esperanza</h2>
+                    <span className="text-3xl">💌</span>
                 </div>
                 
-                <div className="bg-white/10 backdrop-blur-sm rounded-[20px] p-4 border border-white/20 min-h-[200px] max-h-[400px] overflow-y-auto custom-scrollbar">
+                <div className="bg-white/10 backdrop-blur-sm rounded-[20px] p-4 border border-white/20 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
                   {messages.length === 0 ? (
-                    <div className="text-center text-white/70 font-quicksand text-base italic py-8">
+                    <div className="text-center text-white/70 font-quicksand text-lg italic py-8">
                       <p>Aún no hay mensajes.</p>
-                      <p className="text-xs mt-1">¡Sé el primero en dejar uno!</p>
+                      <p className="text-sm mt-1">¡Sé el primero en dejar uno!</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {messages.map((m, idx) => {
                         const rotateClass = idx % 2 === 0 ? 'rotate-1' : '-rotate-1';
                         return (
-                          <div key={idx} className={`bg-white p-4 rounded-lg shadow-md transform ${rotateClass} hover:rotate-0 transition-all hover:z-10`}>
+                          <div key={idx} className={`bg-white p-5 rounded-lg shadow-md transform ${rotateClass} hover:rotate-0 transition-all hover:z-10`}>
                             <div className="flex justify-between mb-2 border-b border-gray-100 pb-1">
-                              <span className="font-bold text-[#116cc5] uppercase text-[10px] tracking-wider truncate mr-2">{m.name}</span>
+                              {/* NOMBRE EN EL MURAL AGRANDADO */}
+                              <span className="font-bold text-[#116cc5] uppercase text-xs tracking-wider truncate mr-2">{m.name}</span>
                               <span className="text-red-400 text-xs">📌</span>
                             </div>
-                            <p className="text-gray-600 font-quicksand italic text-xs leading-relaxed line-clamp-4">"{m.message}"</p>
+                            {/* MENSAJE MURAL AGRANDADO */}
+                            <p className="text-gray-600 font-quicksand italic text-sm leading-relaxed line-clamp-6">"{m.message}"</p>
                           </div>
                         );
                       })}
@@ -345,10 +350,11 @@
                 </div>
               </div>
 
-              {/* PIE DE PÁGINA ACTUALIZADO */}
+              {/* PIE DE PÁGINA */}
               <div className="w-full max-w-xl px-2">
-                  <div className="bg-white rounded-2xl p-4 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
-                    <p className="text-[#116cc5] text-lg font-bold flex flex-col md:flex-row items-center justify-center gap-2">
+                  <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
+                    {/* TEXTO PIE DE PÁGINA AGRANDADO */}
+                    <p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
                         <span>🎨</span>
                         <span>Cada eco financia alegría y terapia para los niños</span>
                         <span>💜</span>
@@ -359,18 +365,19 @@
               {/* Modales */}
               {showLeadModal && (
                 <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
-                  <div className="bg-white rounded-[20px] p-6 max-w-xs w-full text-center shadow-2xl relative animate-in zoom-in duration-300">
-                    <button onClick={() => setShowLeadModal(false)} className="absolute top-3 right-3 text-gray-400 text-xl">&times;</button>
-                    <div className="text-4xl mb-2">🔔</div>
-                    <h2 className="text-[#116cc5] font-lilita text-2xl mb-1">¡Tu eco suena!</h2>
-                    <p className="text-gray-500 mb-4 text-xs">Completa tus datos para sumar</p>
+                  <div className="bg-white rounded-[20px] p-6 max-w-sm w-full text-center shadow-2xl relative animate-in zoom-in duration-300">
+                    <button onClick={() => setShowLeadModal(false)} className="absolute top-3 right-3 text-gray-400 text-2xl">&times;</button>
+                    <div className="text-5xl mb-2">🔔</div>
+                    <h2 className="text-[#116cc5] font-lilita text-3xl mb-1">¡Tu eco suena!</h2>
+                    <p className="text-gray-500 mb-6 text-base">Completa tus datos para sumar</p>
                     
-                    {errorMessage && <div className="bg-red-100 text-red-600 p-2 rounded mb-2 text-xs font-bold">{errorMessage}</div>}
+                    {errorMessage && <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-sm font-bold">{errorMessage}</div>}
                     
-                    <form onSubmit={submitLead} className="space-y-3">
-                      <input type="text" placeholder="Tu nombre" className="w-full bg-gray-50 border-2 border-gray-100 rounded-lg px-3 py-2 outline-none focus:border-[#0098d9] text-gray-700 text-sm" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
-                      <input type="email" placeholder="tu@email.com" className="w-full bg-gray-50 border-2 border-gray-100 rounded-lg px-3 py-2 outline-none focus:border-[#0098d9] text-gray-700 text-sm" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-                      <button type="submit" disabled={loading} className="w-full bg-[#116cc5] text-white font-bold py-2 rounded-lg hover:bg-[#005bb5] transition-colors shadow-md text-sm">
+                    <form onSubmit={submitLead} className="space-y-4">
+                      {/* INPUTS AGRANDADOS A text-base */}
+                      <input type="text" placeholder="Tu nombre" className="w-full bg-gray-50 border-2 border-gray-100 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] text-gray-700 text-base" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      <input type="email" placeholder="tu@email.com" className="w-full bg-gray-50 border-2 border-gray-100 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] text-gray-700 text-base" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+                      <button type="submit" disabled={loading} className="w-full bg-[#116cc5] text-white font-bold py-3 rounded-lg hover:bg-[#005bb5] transition-colors shadow-md text-lg">
                         {loading ? '...' : 'Confirmar'}
                       </button>
                     </form>
@@ -380,21 +387,21 @@
 
               {showThanksModal && (
                 <div className="fixed inset-0 bg-[#001f3f]/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
-                  <div className="bg-white rounded-[20px] p-6 max-w-xs w-full text-center shadow-2xl animate-in zoom-in duration-300">
-                    <div className="text-4xl mb-2">💛</div>
-                    <h2 className="text-[#116cc5] font-lilita text-2xl mb-1">¡Gracias!</h2>
-                    <p className="text-gray-500 mb-4 text-xs">Deja un mensaje en el mural</p>
+                  <div className="bg-white rounded-[20px] p-6 max-w-sm w-full text-center shadow-2xl animate-in zoom-in duration-300">
+                    <div className="text-5xl mb-2">💛</div>
+                    <h2 className="text-[#116cc5] font-lilita text-3xl mb-1">¡Gracias!</h2>
+                    <p className="text-gray-500 mb-6 text-base">Deja un mensaje en el mural</p>
                     <form onSubmit={submitMessage}>
-                      {/* CAJA DE TEXTO AZUL CON LETRA BLANCA */}
+                      {/* TEXTAREA AGRANDADO text-base */}
                       <textarea 
-                        className="w-full bg-[#116cc5] border-none rounded-lg p-3 text-white placeholder-white/70 mb-3 focus:ring-2 focus:ring-[#ffd058] outline-none h-24 resize-none text-xs" 
+                        className="w-full bg-[#116cc5] border-none rounded-lg p-4 text-white placeholder-white/70 mb-4 focus:ring-2 focus:ring-[#ffd058] outline-none h-32 resize-none text-base" 
                         placeholder="Escribe algo bonito..." 
                         value={messageData} 
                         onChange={e => setMessageData(e.target.value)}
                       ></textarea>
                       <div className="flex gap-2">
-                        <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-2 text-gray-400 font-bold text-xs">Saltar</button>
-                        <button type="submit" disabled={loading} className="flex-1 bg-[#ffd058] text-[#116cc5] font-bold py-2 rounded-lg hover:bg-[#ffb800] shadow-md text-xs">
+                        <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-3 text-gray-400 font-bold text-base">Saltar</button>
+                        <button type="submit" disabled={loading} className="flex-1 bg-[#ffd058] text-[#116cc5] font-bold py-3 rounded-lg hover:bg-[#ffb800] shadow-md text-base">
                           {loading ? '...' : 'Publicar'}
                         </button>
                       </div>
