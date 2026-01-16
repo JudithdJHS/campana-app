@@ -207,13 +207,14 @@
           };
 
           const totalEchos = leads.length;
-          const workshops = Math.floor(totalEchos / 100);
-          const progress = totalEchos % 100;
+          // --- CAMBIO A META DE 20 ---
+          const workshops = Math.floor(totalEchos / 20);
+          const progress = totalEchos % 20;
 
           return (
             <div className="min-h-screen w-full bg-gradient-to-br from-[#0098d9] via-[#116cc5] to-[#0098d9] font-sans text-white overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-8">
               
-              {/* --- HEADER CON LOGO BLANCO REAL --- */}
+              {/* HEADER CON LOGO BLANCO REAL */}
               <header className="text-center mb-4 mt-2 animate-in fade-in slide-in-from-top duration-700 w-full max-w-2xl px-4">
                 
                 <img 
@@ -229,7 +230,8 @@
                         Haz que la esperanza también suene para otros niños que continúan su lucha.
                     </p>
                     <p className="text-xs md:text-sm font-quicksand font-bold text-[#ffd058] uppercase tracking-wide">
-                        Cada 100 campanadas, un niño recibe un kit de arteterapia 🎨
+                        {/* TEXTO ACTUALIZADO A 20 */}
+                        Cada 20 campanadas, un niño recibe un kit de arteterapia 🎨
                     </p>
                 </div>
               </header>
@@ -250,9 +252,10 @@
               <div className="w-full max-w-2xl mb-6 px-2">
                 <div className="bg-[#116cc5]/30 backdrop-blur-md rounded-full p-1.5 border border-white/20">
                   <div className="bg-white/20 h-8 rounded-full overflow-hidden relative">
-                    <div className="h-full bg-gradient-to-r from-[#ffd058] to-[#ffb800]" style={{ width: `${progress}%`, transition: 'width 1s ease' }}></div>
+                    <div className="h-full bg-gradient-to-r from-[#ffd058] to-[#ffb800]" style={{ width: `${(progress / 20) * 100}%`, transition: 'width 1s ease' }}></div>
                     <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-sm">
-                      Faltan {100 - progress} ecos para el próximo taller
+                      {/* TEXTO ACTUALIZADO A 20 */}
+                      Faltan {20 - progress} ecos para el próximo taller
                     </div>
                   </div>
                 </div>
@@ -290,11 +293,10 @@
                 ¡HACER SONAR!
               </button>
 
-              {/* --- BLOQUE: SIGNIFICADO DE LA CAMPANA CON FOTO --- */}
+              {/* SIGNIFICADO DE LA CAMPANA CON FOTO */}
               <div className="w-full max-w-2xl px-4 mb-8 animate-in fade-in slide-in-from-bottom duration-1000">
                 <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 text-center shadow-lg border-2 border-white/20">
                     
-                    {/* FOTO DE LOS NIÑOS */}
                     <img 
                         src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/ARTETERAPIA-FAUS-.png" 
                         alt="Niños disfrutando arteterapia" 
@@ -385,7 +387,13 @@
                     <h2 className="text-[#116cc5] font-lilita text-2xl mb-1">¡Gracias!</h2>
                     <p className="text-gray-500 mb-4 text-xs">Deja un mensaje en el mural</p>
                     <form onSubmit={submitMessage}>
-                      <textarea className="w-full bg-[#f0f9ff] border-none rounded-lg p-3 text-gray-700 mb-3 focus:ring-2 focus:ring-[#116cc5] outline-none h-24 resize-none text-xs" placeholder="Escribe algo bonito..." value={messageData} onChange={e => setMessageData(e.target.value)}></textarea>
+                      {/* CAJA DE TEXTO AZUL CON LETRA BLANCA */}
+                      <textarea 
+                        className="w-full bg-[#116cc5] border-none rounded-lg p-3 text-white placeholder-white/70 mb-3 focus:ring-2 focus:ring-[#ffd058] outline-none h-24 resize-none text-xs" 
+                        placeholder="Escribe algo bonito..." 
+                        value={messageData} 
+                        onChange={e => setMessageData(e.target.value)}
+                      ></textarea>
                       <div className="flex gap-2">
                         <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-2 text-gray-400 font-bold text-xs">Saltar</button>
                         <button type="submit" disabled={loading} className="flex-1 bg-[#ffd058] text-[#116cc5] font-bold py-2 rounded-lg hover:bg-[#ffb800] shadow-md text-xs">
