@@ -24,7 +24,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Quicksand:wght@400;500;600;700&display=swap');
         .font-lilita { font-family: 'Lilita One', cursive; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
-        body { background-color: #f8fafc; overflow-x: hidden; } /* Fondo muy clarito para que resalten los bloques */
+        body { background-color: #f8fafc; overflow-x: hidden; }
         
         /* Animaciones */
         @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(-18deg); } 75% { transform: rotate(12deg); } }
@@ -36,7 +36,7 @@
             position: absolute; animation: wave 2s infinite; pointer-events: none; z-index: 0;
         }
 
-        /* --- ANIMACIÓN DE DESTELLOS (CORAZONES Y PUNTOS) --- */
+        /* Animación de destellos */
         @keyframes pop-particle {
             0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
@@ -46,7 +46,7 @@
             top: 50%; left: 50%;
             pointer-events: none;
             animation: pop-particle 1s ease-out forwards;
-            font-size: 24px; /* Tamaño de los corazones */
+            font-size: 24px;
         }
     </style>
 </head>
@@ -89,7 +89,6 @@
           
           const audioContextRef = useRef(null);
 
-          // Auth y Datos
           useEffect(() => {
             signInAnonymously(auth).catch(e => console.error(e));
             return onAuthStateChanged(auth, setUser);
@@ -104,7 +103,6 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
-          // Sonido
           const playBellSound = async () => {
             try {
               if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -129,7 +127,7 @@
             setIsSwinging(true);
             playBellSound();
             setTimeout(() => setIsSwinging(false), 1200);
-            setTimeout(() => { setErrorMessage(''); setShowLeadModal(true); }, 1500); // Un poco más de tiempo para ver los destellos
+            setTimeout(() => { setErrorMessage(''); setShowLeadModal(true); }, 1500);
           };
 
           const submitLead = async (e) => {
@@ -167,7 +165,6 @@
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
-          // Elementos de destellos (Corazones y puntos)
           const particles = [
             {tx: '-80px', ty: '-80px', char: '❤️', d: '0s'}, {tx: '80px', ty: '-90px', char: '💛', d: '0.1s'},
             {tx: '-60px', ty: '10px', char: '💙', d: '0.2s'}, {tx: '70px', ty: '30px', char: '❤️', d: '0.1s'},
@@ -178,21 +175,25 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-10">
               
-              {/* Header */}
+              {/* --- HEADER CON LOGOS --- */}
               <header className="text-center mb-6 mt-4 w-full max-w-2xl px-4 animate-in fade-in slide-in-from-top duration-700">
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" alt="Logo" className="h-28 md:h-32 mx-auto mb-2 object-contain drop-shadow-md filter invert brightness-0" />
-                {/* Nota: He invertido el logo a negro/gris para el fondo claro, si es blanco original quitar 'filter...' */}
+                {/* Logo Fundación (Pequeño arriba) */}
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" alt="Logo FAUS" className="h-16 md:h-20 mx-auto mb-2 object-contain drop-shadow-md filter invert brightness-0 opacity-60" />
                 
-                <h1 className="font-lilita text-5xl md:text-6xl mb-2 text-[#0098d9]">Toca la Campana</h1>
-                <p className="text-lg font-quicksand font-bold text-gray-600">Fundación FAUS</p>
+                {/* Logo Campaña (Título Principal) */}
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-toca-la-campana.png" alt="Campaña Toca la Campana" className="w-64 md:w-80 mx-auto mb-2 object-contain hover:scale-105 transition-transform duration-300" />
+                
+                {/* Subtítulo */}
+                <p className="text-sm md:text-base font-quicksand font-bold text-[#0098d9] uppercase tracking-widest mb-4">
+                    por la FUNDACIÓN ABRAZA UN SUEÑO
+                </p>
               </header>
 
-              {/* CAMPANA + DESTELLOS */}
+              {/* CAMPANA */}
               <div className="relative mb-8 flex items-center justify-center h-52 md:h-64 pointer-events-none">
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
                 
-                {/* Destellos */}
                 {isSwinging && particles.map((p, i) => (
                     <div key={i} className="particle" style={{ '--tx': p.tx, '--ty': p.ty, animationDelay: p.d }}>{p.char}</div>
                 ))}
@@ -212,26 +213,24 @@
                 </div>
               </div>
 
-              {/* BOTÓN AZUL (Captura 3) */}
+              {/* BOTÓN AZUL */}
               <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-2xl md:text-3xl px-12 py-4 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-4 border-[#00699b] flex items-center gap-3">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* TARJETA META (Captura 3) */}
+              {/* TARJETA META */}
               <div className="bg-white rounded-3xl p-6 shadow-xl w-full max-w-xl text-center mb-8 border border-gray-100">
                   <p className="text-gray-700 font-quicksand text-lg">
                       Cada <span className="font-lilita text-[#ffd058] text-2xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
                   </p>
               </div>
 
-              {/* CONTADORES (Captura 3 - Azul y Amarillo) */}
+              {/* CONTADORES */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
-                {/* Caja Azul */}
                 <div className="bg-[#0098d9] rounded-2xl p-6 text-center shadow-lg text-white">
                   <div className="font-lilita text-6xl mb-1">{workshops}</div>
                   <div className="font-bold text-sm uppercase tracking-wide opacity-90">Talleres Logrados</div>
                 </div>
-                {/* Caja Amarilla */}
                 <div className="bg-[#ffd058] rounded-2xl p-6 text-center shadow-lg text-gray-800">
                   <div className="font-lilita text-6xl mb-1">{totalEchos}</div>
                   <div className="font-bold text-sm uppercase tracking-wide opacity-80">Ecos Totales</div>
@@ -265,45 +264,23 @@
                 </div>
               </div>
 
-              {/* MODAL MI ECO (Diseño Captura 2) */}
+              {/* MODAL MI ECO */}
               {showLeadModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
                   <div className="bg-white rounded-[24px] w-full max-w-sm shadow-2xl relative overflow-hidden animate-in zoom-in duration-300">
-                    
-                    {/* Encabezado Azul */}
                     <div className="bg-[#0098d9] p-6 text-center relative">
                         <button onClick={() => setShowLeadModal(false)} className="absolute top-3 right-3 text-white/70 hover:text-white text-2xl font-bold">&times;</button>
                         <div className="text-5xl mb-2 filter drop-shadow-md">💛</div>
                         <h2 className="text-white font-lilita text-3xl mb-1">¡Tu eco ya resuena!</h2>
                         <p className="text-blue-100 text-sm font-quicksand">Confirma tus datos para que sume oficialmente</p>
                     </div>
-
-                    {/* Cuerpo Blanco */}
                     <div className="p-6 bg-white space-y-4">
                         {errorMessage && <div className="bg-red-50 text-red-500 p-2 rounded text-xs text-center font-bold">{errorMessage}</div>}
-                        
                         <form onSubmit={submitLead} className="space-y-4">
-                            <div>
-                                <label className="block text-gray-700 font-bold mb-1 text-sm ml-1">Tu nombre</label>
-                                <input type="text" placeholder="¿Cómo te llamas?" className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] focus:ring-2 focus:ring-blue-100 text-gray-700 text-base transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-bold mb-1 text-sm ml-1">Tu email</label>
-                                <input type="email" placeholder="correo@ejemplo.com" className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] focus:ring-2 focus:ring-blue-100 text-gray-700 text-base transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-                            </div>
-                            
-                            {/* Checkbox Privacidad */}
-                            <div className="flex items-start gap-2 mt-2">
-                                <input type="checkbox" id="privacy" className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" checked={formData.privacy} onChange={e => setFormData({...formData, privacy: e.target.checked})} />
-                                <label htmlFor="privacy" className="text-xs text-gray-500 leading-tight">
-                                    Acepto la política de privacidad y el tratamiento de mis datos para fines de la fundación.
-                                </label>
-                            </div>
-
-                            {/* Botón Amarillo */}
-                            <button type="submit" disabled={loading} className="w-full bg-[#ffd058] text-gray-800 font-lilita text-xl py-3 rounded-xl hover:bg-[#ffc107] transition-all shadow-md uppercase tracking-wide mt-2">
-                                {loading ? '...' : '¡CONFIRMAR MI ECO!'}
-                            </button>
+                            <div><label className="block text-gray-700 font-bold mb-1 text-sm ml-1">Tu nombre</label><input type="text" placeholder="¿Cómo te llamas?" className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] focus:ring-2 focus:ring-blue-100 text-gray-700 text-base transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required /></div>
+                            <div><label className="block text-gray-700 font-bold mb-1 text-sm ml-1">Tu email</label><input type="email" placeholder="correo@ejemplo.com" className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-[#0098d9] focus:ring-2 focus:ring-blue-100 text-gray-700 text-base transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required /></div>
+                            <div className="flex items-start gap-2 mt-2"><input type="checkbox" id="privacy" className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" checked={formData.privacy} onChange={e => setFormData({...formData, privacy: e.target.checked})} /><label htmlFor="privacy" className="text-xs text-gray-500 leading-tight">Acepto la política de privacidad y el tratamiento de mis datos para fines de la fundación.</label></div>
+                            <button type="submit" disabled={loading} className="w-full bg-[#ffd058] text-gray-800 font-lilita text-xl py-3 rounded-xl hover:bg-[#ffc107] transition-all shadow-md uppercase tracking-wide mt-2">{loading ? '...' : '¡CONFIRMAR MI ECO!'}</button>
                         </form>
                     </div>
                   </div>
