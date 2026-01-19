@@ -26,7 +26,7 @@
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
         body { background-color: #f8fafc; overflow-x: hidden; }
         
-        /* Animaciones */
+        /* Animación Campana */
         @keyframes swing { 
             0% { transform: rotate(0deg); } 
             20% { transform: rotate(15deg); } 
@@ -37,19 +37,20 @@
         }
         .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
         
-        /* ONDAS DE LUZ (Glow) */
-        @keyframes soft-glow { 
-            0% { transform: scale(0.8); opacity: 0.6; } 
-            100% { transform: scale(2.5); opacity: 0; } 
+        /* --- ONDAS VISIBLES (EFECTO SONIDO) --- */
+        @keyframes ripple { 
+            0% { transform: scale(0.8); opacity: 1; border-width: 6px; } 
+            100% { transform: scale(2.4); opacity: 0; border-width: 0px; } 
         }
-        .glow-ring { 
+        .ripple-ring { 
             position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
             border-radius: 50%; 
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 215, 0, 0) 70%);
-            width: 100%; height: 100%;
-            animation: soft-glow 2.5s infinite; 
+            border: 4px solid #facc15; /* Color amarillo de la campana */
+            animation: ripple 2s infinite; 
             pointer-events: none; 
             z-index: 0;
+            opacity: 0; /* Empieza invisible */
         }
 
         /* Destellos */
@@ -185,7 +186,6 @@
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
-          // COLORES PARA EL MURAL
           const postItColors = [
             'bg-[#ffe66d]', 'bg-[#ffc6ff]', 'bg-[#9bf6ff]', 'bg-[#ffd6a5]', 'bg-[#caffbf]'
           ];
@@ -200,9 +200,9 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- HEADER --- */}
+              {/* --- HEADER (IMAGEN NIÑO) --- */}
               <header className="text-center w-full max-w-4xl px-2 mt-4 mb-2 animate-in fade-in slide-in-from-top duration-700">
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil1.jpg" 
                      alt="Campaña Toca la Campana" 
                      className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
                 
@@ -222,15 +222,16 @@
                       No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
                   </p>
                   <p className="font-quicksand text-gray-500 text-base md:text-lg italic mt-2">
-                      "Y cuando suena, deja una certeza en el aire: la esperanza es real… y puede volver a sonar para otros niños."
+                      "Y cuando suena, deja una certeza en el aire: que la esperanza es real… y puede volver a sonar para otros niños."
                   </p>
               </div>
 
-              {/* --- CAMPANA --- */}
-              <div className="relative mb-6 flex items-center justify-center h-60 md:h-72 pointer-events-none mt-6">
+              {/* --- CAMPANA CON ONDAS --- */}
+              <div className="relative mt-8 mb-10 flex items-center justify-center h-64 md:h-80 pointer-events-none">
                 
-                <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
-                <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1.2s' }}></div>
+                {/* ONDAS VISIBLES (Ripples) */}
+                <div className="ripple-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
+                <div className="ripple-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1s' }}></div>
                 
                 {isSwinging && particles.map((p, i) => (
                     <div key={i} className="particle" style={{ '--tx': p.tx, '--ty': p.ty, animationDelay: p.d }}>{p.char}</div>
@@ -238,7 +239,7 @@
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
                    
-                   {/* SVG CAMPANA CANVA */}
+                   {/* SVG CAMPANA PLANA AMARILLA (CANVA STYLE) */}
                    <svg width="250" height="250" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[320px] md:h-[320px]">
                     <g transform="translate(150, 50)">
                         <circle cx="0" cy="0" r="15" fill="#eab308" />
@@ -254,7 +255,7 @@
                 </div>
               </div>
 
-              {/* --- BOTÓN AZUL (MÁS ABAJO mt-12) --- */}
+              {/* --- BOTÓN AZUL (MÁS ABAJO) --- */}
               <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3 mt-12">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
@@ -315,7 +316,7 @@
                 </div>
               </div>
 
-              {/* --- PIE DE PÁGINA --- */}
+              {/* --- PIE DE PÁGINA (AZUL #2957a4) --- */}
               <div className="w-full max-w-xl px-2 mb-8">
                   <div className="rounded-2xl p-5 text-center shadow-xl transform hover:scale-105 transition-all" 
                        style={{ backgroundColor: '#2957a4', borderBottom: '6px solid #ffd058' }}>
