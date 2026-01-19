@@ -26,7 +26,7 @@
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
         body { background-color: #f8fafc; overflow-x: hidden; }
         
-        /* Animaciones */
+        /* Animación Campana */
         @keyframes swing { 
             0% { transform: rotate(0deg); } 
             20% { transform: rotate(15deg); } 
@@ -37,19 +37,20 @@
         }
         .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
         
-        /* ONDAS DE LUZ (Glow) */
-        @keyframes soft-glow { 
-            0% { transform: scale(0.8); opacity: 0.6; } 
-            100% { transform: scale(2.5); opacity: 0; } 
+        /* --- NUEVAS ONDAS VISIBLES (EFECTO SONIDO) --- */
+        @keyframes ripple { 
+            0% { transform: scale(0.8); opacity: 1; border-width: 4px; } 
+            100% { transform: scale(2.2); opacity: 0; border-width: 0px; } 
         }
-        .glow-ring { 
+        .ripple-ring { 
             position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
             border-radius: 50%; 
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 215, 0, 0) 70%);
-            width: 100%; height: 100%;
-            animation: soft-glow 2.5s infinite; 
+            border: 4px solid #facc15; /* Color amarillo de la campana */
+            animation: ripple 2s infinite; 
             pointer-events: none; 
             z-index: 0;
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
         }
 
         /* Destellos */
@@ -185,7 +186,6 @@
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
-          // COLORES PARA EL MURAL
           const postItColors = [
             'bg-[#ffe66d]', 'bg-[#ffc6ff]', 'bg-[#9bf6ff]', 'bg-[#ffd6a5]', 'bg-[#caffbf]'
           ];
@@ -200,7 +200,7 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- HEADER --- */}
+              {/* HEADER */}
               <header className="text-center w-full max-w-4xl px-2 mt-4 mb-2 animate-in fade-in slide-in-from-top duration-700">
                 <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
                      alt="Campaña Toca la Campana" 
@@ -211,7 +211,7 @@
                 </p>
               </header>
 
-              {/* --- TEXTO EXPLICATIVO --- */}
+              {/* TEXTO EXPLICATIVO */}
               <div className="w-full max-w-2xl px-6 mb-2 text-center">
                   <h2 className="font-lilita text-4xl text-[#001f3f] mb-2">¿Qué significa tocar la campana?</h2>
                   <p className="font-quicksand text-lg text-[#116cc5] font-bold leading-tight mb-2">
@@ -226,10 +226,12 @@
                   </p>
               </div>
 
-              {/* --- CAMPANA ESTILO CANVA (PLANA Y AMARILLA) --- */}
-              <div className="relative mb-6 flex items-center justify-center h-60 md:h-72 pointer-events-none">
-                <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
-                <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1.2s' }}></div>
+              {/* --- CAMPANA (SEPARADA DEL BOTÓN) + ONDAS VISIBLES --- */}
+              <div className="relative mt-8 mb-10 flex items-center justify-center h-64 md:h-80 pointer-events-none">
+                
+                {/* Ondas Amarillas Visibles */}
+                <div className="ripple-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
+                <div className="ripple-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1s' }}></div>
                 
                 {isSwinging && particles.map((p, i) => (
                     <div key={i} className="particle" style={{ '--tx': p.tx, '--ty': p.ty, animationDelay: p.d }}>{p.char}</div>
@@ -237,32 +239,14 @@
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
                    
-                   {/* NUEVO SVG CAMPANA CANVA */}
+                   {/* SVG CAMPANA CANVA */}
                    <svg width="250" height="250" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[320px] md:h-[320px]">
                     <g transform="translate(150, 50)">
-                        {/* Soporte */}
-                        <path d="M -15 0 Q 0 -15 15 0 L 15 10 Q 0 15 -15 10 Z" fill="#eab308" />
-                        
-                        {/* Cuerpo Campana (Amarillo plano) */}
-                        <path d="M -70 180 
-                                 Q -90 60 -30 20 
-                                 L 30 20 
-                                 Q 90 60 70 180 
-                                 Q 120 190 120 210 
-                                 L -120 210 
-                                 Q -120 190 -70 180 Z" 
-                              fill="#facc15" />
-                        
-                        {/* Banda oscura (Detalle del diseño) */}
+                        <circle cx="0" cy="0" r="15" fill="#eab308" />
+                        <path d="M -70 180 Q -90 60 -30 20 L 30 20 Q 90 60 70 180 Q 120 190 120 210 L -120 210 Q -120 190 -70 180 Z" fill="#facc15" />
                         <path d="M -68 150 Q 0 160 68 150 L 75 170 Q 0 180 -75 170 Z" fill="#eab308" opacity="0.3" />
-
-                        {/* Interior oscuro */}
                         <ellipse cx="0" cy="210" rx="120" ry="20" fill="#ca8a04" />
-                        
-                        {/* Borde frontal (para dar efecto 3D plano) */}
                         <path d="M -120 210 Q 0 240 120 210 Q 0 190 -120 210" fill="#facc15" />
-
-                        {/* Badajo */}
                         <line x1="0" y1="50" x2="0" y2="220" stroke="#ca8a04" strokeWidth="8" />
                         <circle cx="0" cy="240" r="25" fill="#facc15" />
                     </g>
@@ -271,19 +255,19 @@
                 </div>
               </div>
 
-              {/* --- BOTÓN AZUL --- */}
-              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3">
+              {/* --- BOTÓN AZUL (CON MARGEN ARRIBA) --- */}
+              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3 mt-4">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* --- TARJETA META --- */}
+              {/* TARJETA META */}
               <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-lg text-center mb-8 border border-gray-100">
                   <p className="text-gray-600 font-quicksand text-lg font-medium">
                       Cada <span className="font-lilita text-[#ffd058] text-3xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
                   </p>
               </div>
 
-              {/* --- CONTADORES --- */}
+              {/* CONTADORES */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
                 <div className="bg-[#0098d9] rounded-2xl p-6 text-center shadow-lg text-white">
                   <div className="font-lilita text-6xl mb-1">{workshops}</div>
@@ -295,7 +279,7 @@
                 </div>
               </div>
 
-              {/* --- BARRA PROGRESO --- */}
+              {/* BARRA PROGRESO */}
               <div className="w-full max-w-2xl mb-12 px-2">
                 <div className="bg-[#0098d9] rounded-full p-2 shadow-inner">
                   <div className="bg-white/20 h-14 rounded-full overflow-hidden relative">
@@ -307,7 +291,7 @@
                 </div>
               </div>
 
-              {/* --- MURAL COLORIDO --- */}
+              {/* MURAL COLORIDO */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 
@@ -332,7 +316,7 @@
                 </div>
               </div>
 
-              {/* --- PIE DE PÁGINA (AZUL OSCURO #2957a4 Y BORDE AMARILLO) --- */}
+              {/* --- PIE DE PÁGINA (AZUL #2957a4) --- */}
               <div className="w-full max-w-xl px-2 mb-8">
                   <div className="rounded-2xl p-5 text-center shadow-xl transform hover:scale-105 transition-all" 
                        style={{ backgroundColor: '#2957a4', borderBottom: '6px solid #ffd058' }}>
