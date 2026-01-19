@@ -89,11 +89,13 @@
           
           const audioContextRef = useRef(null);
 
+          // Auth
           useEffect(() => {
             signInAnonymously(auth).catch(e => console.error(e));
             return onAuthStateChanged(auth, setUser);
           }, []);
 
+          // Datos
           useEffect(() => {
             const unsubLeads = onSnapshot(collection(db, 'leads'), s => setLeads(s.docs.map(d => ({id:d.id, ...d.data()}))));
             const unsubMsgs = onSnapshot(collection(db, 'messages'), s => {
@@ -103,6 +105,7 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
+          // Sonido
           const playBellSound = async () => {
             try {
               if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -173,24 +176,28 @@
           ];
 
           return (
-            <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 md:p-4 flex flex-col items-center pb-10">
+            <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- HEADER CON LOGOS --- */}
-              <header className="text-center mb-6 mt-4 w-full max-w-2xl px-4 animate-in fade-in slide-in-from-top duration-700">
-                {/* Logo Fundación (Pequeño arriba) */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" alt="Logo FAUS" className="h-16 md:h-20 mx-auto mb-2 object-contain drop-shadow-md filter invert brightness-0 opacity-60" />
+              {/* --- HEADER CON NUEVA IMAGEN --- */}
+              <header className="text-center w-full max-w-4xl px-2 mt-2 mb-2 animate-in fade-in slide-in-from-top duration-700">
                 
-                {/* Logo Campaña (Título Principal) */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-toca-la-campana.png" alt="Campaña Toca la Campana" className="w-64 md:w-80 mx-auto mb-2 object-contain hover:scale-105 transition-transform duration-300" />
+                {/* Logo Fundación (Pequeño y Oscuro) */}
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" 
+                     alt="Logo FAUS" 
+                     className="h-10 md:h-12 mx-auto mb-2 object-contain filter invert opacity-80" /> 
+
+                {/* NUEVA IMAGEN PRINCIPAL (Centrada) */}
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
+                     alt="Campaña Toca la Campana" 
+                     className="w-full max-w-md mx-auto mb-2 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
                 
-                {/* Subtítulo */}
-                <p className="text-sm md:text-base font-quicksand font-bold text-[#0098d9] uppercase tracking-widest mb-4">
-                    por la FUNDACIÓN ABRAZA UN SUEÑO
+                <p className="text-xs md:text-sm font-bold text-[#0098d9] uppercase tracking-widest mb-4">
+                    por LA FUNDACIÓN ABRAZA UN SUEÑO
                 </p>
               </header>
 
-              {/* CAMPANA */}
-              <div className="relative mb-8 flex items-center justify-center h-52 md:h-64 pointer-events-none">
+              {/* CAMPANA + DESTELLOS */}
+              <div className="relative mb-6 flex items-center justify-center h-48 md:h-60 pointer-events-none">
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
                 
@@ -262,6 +269,17 @@
                     </div>
                   }
                 </div>
+              </div>
+
+              {/* PIE DE PÁGINA */}
+              <div className="w-full max-w-xl px-2 mb-8">
+                  <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
+                    <p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
+                        <span>🎨</span>
+                        <span>Cada eco financia alegría y terapia para los niños</span>
+                        <span>💜</span>
+                    </p>
+                  </div>
               </div>
 
               {/* MODAL MI ECO */}
