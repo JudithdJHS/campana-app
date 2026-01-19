@@ -175,42 +175,45 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- 1. IMAGEN PRINCIPAL --- */}
-              <header className="text-center w-full max-w-4xl px-0 mt-0 mb-6 animate-in fade-in slide-in-from-top duration-700">
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil1.jpg" 
+              {/* --- HEADER --- */}
+              <header className="text-center w-full max-w-4xl px-2 mt-4 mb-2 animate-in fade-in slide-in-from-top duration-700">
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
                      alt="Campaña Toca la Campana" 
-                     className="w-full max-w-lg mx-auto rounded-b-xl shadow-sm object-contain" />
+                     className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
+                
+                <p className="text-xs md:text-sm font-bold text-[#0098d9] uppercase tracking-widest mb-4">
+                    by FUNDACIÓN ABRAZA UN SUEÑO
+                </p>
               </header>
 
-              {/* --- 2. TEXTO EXPLICATIVO (Nuevo Diseño) --- */}
+              {/* --- TEXTO EXPLICATIVO --- */}
               <div className="w-full max-w-2xl px-6 mb-10 text-center">
                   <h2 className="font-lilita text-4xl text-[#001f3f] mb-3">¿Qué significa tocar la campana?</h2>
-                  
                   <p className="font-quicksand text-lg text-[#116cc5] font-bold leading-tight mb-4">
                       Tocar la campana significa haber ganado una batalla contra el cáncer
                   </p>
-                  
                   <p className="font-quicksand text-gray-600 text-base leading-relaxed mb-4">
                       En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento. 
                       No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
                   </p>
-                  
                   <p className="font-quicksand text-gray-500 text-sm italic">
                       "Y cuando suena, deja una certeza en el aire: la esperanza es real… y puede volver a sonar para otros niños."
                   </p>
               </div>
 
-              {/* --- 3. CAMPANA + DESTELLOS --- */}
-              <div className="relative mb-6 flex items-center justify-center h-48 md:h-60 pointer-events-none">
-                <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
-                <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
+              {/* --- CAMPANA GIGANTE + DESTELLOS --- */}
+              <div className="relative mb-10 flex items-center justify-center h-72 md:h-96 pointer-events-none">
+                {/* Ondas más grandes */}
+                <div className="wave-ring w-72 h-72 md:w-96 md:h-96" style={{ animationDelay: '0s' }}></div>
+                <div className="wave-ring w-72 h-72 md:w-96 md:h-96" style={{ animationDelay: '0.6s' }}></div>
                 
                 {isSwinging && particles.map((p, i) => (
                     <div key={i} className="particle" style={{ '--tx': p.tx, '--ty': p.ty, animationDelay: p.d }}>{p.char}</div>
                 ))}
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
-                   <svg width="200" height="200" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[260px] md:h-[260px]">
+                   {/* SVG MÁS GRANDE */}
+                   <svg width="250" height="250" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[350px] md:h-[350px]">
                     <defs><linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor:'#ffd700'}} /><stop offset="100%" style={{stopColor:'#e6ac00'}} /></linearGradient></defs>
                     <g transform="translate(100, 50)">
                       <rect x="-5" y="-20" width="10" height="25" rx="3" fill="#b8860b" />
@@ -224,19 +227,19 @@
                 </div>
               </div>
 
-              {/* --- 4. BOTÓN AZUL --- */}
-              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl px-14 py-5 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-4 border-[#00699b] flex items-center gap-3">
+              {/* --- BOTÓN AZUL --- */}
+              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-10 border-b-8 border-[#00699b] flex items-center gap-3">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* --- 5. TARJETA META --- */}
+              {/* --- TARJETA META --- */}
               <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-lg text-center mb-8 border border-gray-100">
                   <p className="text-gray-600 font-quicksand text-lg font-medium">
                       Cada <span className="font-lilita text-[#ffd058] text-3xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
                   </p>
               </div>
 
-              {/* --- 6. CONTADORES (Estilo Tarjeta Azul/Amarillo) --- */}
+              {/* --- CONTADORES --- */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
                 <div className="bg-[#0098d9] rounded-2xl p-6 text-center shadow-lg text-white">
                   <div className="font-lilita text-6xl mb-1">{workshops}</div>
@@ -248,28 +251,30 @@
                 </div>
               </div>
 
-              {/* --- 7. BARRA PROGRESO --- */}
-              <div className="w-full max-w-2xl mb-10 px-2">
+              {/* --- BARRA PROGRESO GIGANTE --- */}
+              <div className="w-full max-w-2xl mb-12 px-2">
                 <div className="bg-[#0098d9] rounded-full p-2 shadow-inner">
-                  <div className="bg-white/20 h-8 rounded-full overflow-hidden relative">
+                  {/* Altura subida a h-14 */}
+                  <div className="bg-white/20 h-14 rounded-full overflow-hidden relative">
                     <div className="h-full bg-[#ffd058]" style={{ width: `${(progress / 20) * 100}%`, transition: 'width 1s ease' }}></div>
-                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-sm md:text-base">
-                      ¡Solo faltan {20 - progress} ecos para el próximo taller! 🎨✨
+                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-lg md:text-2xl">
+                      ¡Solo faltan {20 - progress} ecos! 🎨✨
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* --- 8. MURAL --- */}
+              {/* --- MURAL CON LETRA GRANDE --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 <div className="bg-white rounded-[20px] p-4 shadow-inner border border-gray-200 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
                   {messages.length === 0 ? <div className="text-center text-gray-400 font-quicksand text-lg italic py-8">Aún no hay mensajes.</div> : 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {messages.map((m, idx) => (
-                        <div key={idx} className={`bg-[#f0f9ff] p-5 rounded-lg shadow-sm border border-blue-50 transform ${idx % 2 === 0 ? 'rotate-1' : '-rotate-1'} hover:rotate-0 transition-all`}>
-                            <div className="flex justify-between mb-2 border-b border-blue-100 pb-1"><span className="font-bold text-[#0098d9] uppercase text-xs tracking-wider truncate mr-2">{m.name}</span><span className="text-red-400 text-xs">📌</span></div>
-                            <p className="text-gray-600 font-quicksand italic text-sm leading-relaxed line-clamp-6">"{m.message}"</p>
+                        <div key={idx} className={`bg-[#f0f9ff] p-6 rounded-lg shadow-sm border border-blue-50 transform ${idx % 2 === 0 ? 'rotate-1' : '-rotate-1'} hover:rotate-0 transition-all`}>
+                            <div className="flex justify-between mb-3 border-b border-blue-100 pb-2"><span className="font-bold text-[#0098d9] uppercase text-sm tracking-wider truncate mr-2">{m.name}</span><span className="text-red-400 text-sm">📌</span></div>
+                            {/* LETRA GRANDE AQUI (text-lg) */}
+                            <p className="text-gray-700 font-quicksand italic text-lg leading-relaxed line-clamp-6">"{m.message}"</p>
                         </div>
                       ))}
                     </div>
@@ -277,7 +282,7 @@
                 </div>
               </div>
 
-              {/* --- 9. PIE DE PÁGINA --- */}
+              {/* --- PIE DE PÁGINA --- */}
               <div className="w-full max-w-xl px-2 mb-8">
                   <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
                     <p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
