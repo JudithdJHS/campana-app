@@ -27,16 +27,33 @@
         body { background-color: #f8fafc; overflow-x: hidden; }
         
         /* Animaciones */
-        @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(-18deg); } 75% { transform: rotate(12deg); } }
-        .bell-swing { animation: swing 1.2s ease-in-out; transform-origin: top center; }
+        @keyframes swing { 
+            0% { transform: rotate(0deg); } 
+            20% { transform: rotate(15deg); } 
+            40% { transform: rotate(-10deg); } 
+            60% { transform: rotate(5deg); } 
+            80% { transform: rotate(-3deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+        .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
         
-        @keyframes wave { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.8); opacity: 0; } }
-        .wave-ring { 
-            border-radius: 50%; border: 4px solid rgba(255, 215, 0, 0.3); 
-            position: absolute; animation: wave 2s infinite; pointer-events: none; z-index: 0;
+        /* NUEVA ANIMACIÓN DE ONDAS (TIPO HALO DE LUZ) */
+        @keyframes soft-glow { 
+            0% { transform: scale(0.8); opacity: 0.6; } 
+            100% { transform: scale(2.5); opacity: 0; } 
+        }
+        .glow-ring { 
+            position: absolute;
+            border-radius: 50%; 
+            /* Fondo degradado suave en lugar de borde sólido */
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0) 70%);
+            width: 100%; height: 100%;
+            animation: soft-glow 2.5s infinite; 
+            pointer-events: none; 
+            z-index: 0;
         }
 
-        /* Animación de destellos */
+        /* Animación de destellos (partículas) */
         @keyframes pop-particle {
             0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
@@ -47,6 +64,7 @@
             pointer-events: none;
             animation: pop-particle 1s ease-out forwards;
             font-size: 24px;
+            z-index: 20;
         }
     </style>
 </head>
@@ -183,13 +201,9 @@
                 <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
                      alt="Campaña Toca la Campana" 
                      className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
-                
-                <p className="text-xs md:text-sm font-bold text-[#0098d9] uppercase tracking-widest mb-4">
-                    by FUNDACIÓN ABRAZA UN SUEÑO
-                </p>
               </header>
 
-              {/* --- TEXTO EXPLICATIVO (Sin margen abajo) --- */}
+              {/* --- TEXTO EXPLICATIVO --- */}
               <div className="w-full max-w-2xl px-6 mb-2 text-center">
                   <h2 className="font-lilita text-4xl text-[#001f3f] mb-2">¿Qué significa tocar la campana?</h2>
                   <p className="font-quicksand text-lg text-[#116cc5] font-bold leading-tight mb-2">
@@ -204,32 +218,72 @@
                   </p>
               </div>
 
-              {/* --- CAMPANA GIGANTE (Altura reducida de h-72 a h-60 para quitar espacio vacío) --- */}
-              <div className="relative mb-6 flex items-center justify-center h-60 md:h-72 pointer-events-none">
-                <div className="wave-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
-                <div className="wave-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0.6s' }}></div>
+              {/* --- CAMPANA 3D GIGANTE + HALO DE LUZ --- */}
+              <div className="relative mb-6 flex items-center justify-center h-64 md:h-80 pointer-events-none">
                 
+                {/* Ondas de luz suave (Glow) */}
+                <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
+                <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1.2s' }}></div>
+                
+                {/* Partículas */}
                 {isSwinging && particles.map((p, i) => (
                     <div key={i} className="particle" style={{ '--tx': p.tx, '--ty': p.ty, animationDelay: p.d }}>{p.char}</div>
                 ))}
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
-                   {/* SVG MANTENIDO GRANDE */}
-                   <svg width="250" height="250" viewBox="0 0 200 200" className="drop-shadow-2xl md:w-[350px] md:h-[350px]">
-                    <defs><linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor:'#ffd700'}} /><stop offset="100%" style={{stopColor:'#e6ac00'}} /></linearGradient></defs>
-                    <g transform="translate(100, 50)">
-                      <rect x="-5" y="-20" width="10" height="25" rx="3" fill="#b8860b" />
-                      <path d="M -50 80 Q -50 20 0 0 Q 50 20 50 80 Z" fill="url(#goldGrad)" />
-                      <ellipse cx="0" cy="80" rx="55" ry="15" fill="#e6ac00" />
-                      <ellipse cx="0" cy="80" rx="52" ry="13" fill="url(#goldGrad)" />
-                      <line x1="0" y1="10" x2="0" y2="70" stroke="#b8860b" strokeWidth="4" />
-                      <circle cx="0" cy="75" r="8" fill="#8b4513" />
+                   
+                   {/* NUEVA CAMPANA 3D CON DEGRADADOS */}
+                   <svg width="280" height="280" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[350px] md:h-[350px]">
+                    <defs>
+                        {/* Degradado Cuerpo Campana (Oro rico) */}
+                        <linearGradient id="bellBody" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#eeb609" />
+                            <stop offset="30%" stopColor="#ffd700" />
+                            <stop offset="60%" stopColor="#f3c21a" />
+                            <stop offset="100%" stopColor="#d4af37" />
+                        </linearGradient>
+                        {/* Degradado Sombra/Borde inferior */}
+                        <linearGradient id="bellRim" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#ffd700" />
+                            <stop offset="100%" stopColor="#b8860b" />
+                        </linearGradient>
+                        {/* Brillo */}
+                        <radialGradient id="bellShine" cx="30%" cy="30%" r="50%">
+                            <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
+                            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+                        </radialGradient>
+                    </defs>
+                    
+                    <g transform="translate(150, 50)">
+                        {/* Soporte Superior */}
+                        <path d="M -40 0 Q 0 -15 40 0 L 40 10 Q 0 20 -40 10 Z" fill="#b8860b" />
+                        
+                        {/* Cuerpo Campana */}
+                        <path d="M -60 180 
+                                 Q -70 80 -40 20 
+                                 L 40 20 
+                                 Q 70 80 60 180 
+                                 Q 100 190 100 210 
+                                 L -100 210 
+                                 Q -100 190 -60 180 Z" 
+                              fill="url(#bellBody)" stroke="#b8860b" strokeWidth="2" />
+                        
+                        {/* Borde Inferior (Rim) */}
+                        <path d="M -100 210 Q 0 230 100 210 L 100 220 Q 0 240 -100 220 Z" fill="url(#bellRim)" />
+                        
+                        {/* Badajo (Pendulo) */}
+                        <line x1="0" y1="20" x2="0" y2="220" stroke="#5c4033" strokeWidth="8" />
+                        <circle cx="0" cy="235" r="20" fill="#5c4033" />
+                        
+                        {/* Brillo para efecto 3D */}
+                        <ellipse cx="-30" cy="100" rx="20" ry="60" fill="url(#bellShine)" transform="rotate(10)" />
                     </g>
                   </svg>
+
                 </div>
               </div>
 
-              {/* --- BOTÓN AZUL (Margen reducido) --- */}
+              {/* --- BOTÓN AZUL --- */}
               <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
@@ -293,7 +347,7 @@
                   </div>
               </div>
 
-              {/* MODALES */}
+              {/* MODAL MI ECO */}
               {showLeadModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
                   <div className="bg-white rounded-[24px] w-full max-w-sm shadow-2xl relative overflow-hidden animate-in zoom-in duration-300">
@@ -316,6 +370,7 @@
                 </div>
               )}
 
+              {/* MODAL GRACIAS */}
               {showThanksModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm" style={{zIndex: 100}}>
                   <div className="bg-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in duration-300">
