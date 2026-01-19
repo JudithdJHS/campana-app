@@ -185,6 +185,15 @@
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
+          // COLORES PARA LOS MENSAJES (Mural Colorido)
+          const postItColors = [
+            'bg-[#ffe66d]', // Amarillo intenso
+            'bg-[#ffc6ff]', // Rosa
+            'bg-[#9bf6ff]', // Azul cielo
+            'bg-[#ffd6a5]', // Naranja suave
+            'bg-[#caffbf]'  // Verde suave
+          ];
+
           const particles = [
             {tx: '-80px', ty: '-80px', char: '❤️', d: '0s'}, {tx: '80px', ty: '-90px', char: '💛', d: '0.1s'},
             {tx: '-60px', ty: '10px', char: '💙', d: '0.2s'}, {tx: '70px', ty: '30px', char: '❤️', d: '0.1s'},
@@ -221,7 +230,7 @@
                   </p>
               </div>
 
-              {/* --- CAMPANA 3D (SVG Puro - No se rompe) --- */}
+              {/* --- CAMPANA ESTILO CANVA (Simple y Plana) --- */}
               <div className="relative mb-6 flex items-center justify-center h-60 md:h-72 pointer-events-none">
                 
                 <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
@@ -233,38 +242,28 @@
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
                    
-                   {/* DIBUJO VECTORIAL DE CAMPANA DORADA */}
-                   <svg width="250" height="250" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[320px] md:h-[320px]">
-                    <defs>
-                        <linearGradient id="goldBody" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#eec74b" />
-                            <stop offset="50%" stopColor="#ffd700" />
-                            <stop offset="100%" stopColor="#b8860b" />
-                        </linearGradient>
-                        <linearGradient id="goldRim" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#ffd700" />
-                            <stop offset="100%" stopColor="#8a6500" />
-                        </linearGradient>
-                        <radialGradient id="shine" cx="30%" cy="30%" r="50%">
-                            <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
-                            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-                        </radialGradient>
-                    </defs>
+                   {/* DIBUJO DE CAMPANA PLANA (Estilo Canva) */}
+                   <svg width="250" height="250" viewBox="0 0 300 300" className="drop-shadow-xl md:w-[320px] md:h-[320px]">
                     <g transform="translate(150, 50)">
-                        {/* Mango */}
-                        <path d="M -10 -10 L 10 -10 L 10 20 L -10 20 Z" fill="#8b4513" />
+                        {/* Soporte (Bolita arriba) */}
+                        <circle cx="0" cy="0" r="15" fill="#facc15" />
                         
-                        {/* Cuerpo */}
-                        <path d="M -60 180 Q -70 80 -30 10 L 30 10 Q 70 80 60 180 Q 110 190 110 210 L -110 210 Q -110 190 -60 180 Z" fill="url(#goldBody)" stroke="#b8860b" strokeWidth="2" />
+                        {/* Cuerpo de la Campana (Curva suave amarilla) */}
+                        <path d="M -60 180 
+                                 Q -80 60 -20 10 
+                                 L 20 10 
+                                 Q 80 60 60 180 
+                                 Q 110 190 110 210 
+                                 L -110 210 
+                                 Q -110 190 -60 180 Z" 
+                              fill="#fde047" /> {/* Amarillo claro plano */}
                         
-                        {/* Borde Inferior */}
-                        <path d="M -110 210 Q 0 230 110 210 L 110 220 Q 0 240 -110 220 Z" fill="url(#goldRim)" />
+                        {/* Sombra interna inferior (Para dar volumen simple) */}
+                        <path d="M -110 210 Q 0 230 110 210 L 110 215 Q 0 240 -110 215 Z" fill="#eab308" />
                         
-                        {/* Badajo */}
-                        <circle cx="0" cy="230" r="18" fill="#5c4033" />
-                        
-                        {/* Brillo */}
-                        <ellipse cx="-30" cy="100" rx="30" ry="70" fill="url(#shine)" transform="rotate(10)" />
+                        {/* Badajo (Péndulo) */}
+                        <line x1="0" y1="20" x2="0" y2="230" stroke="#fde047" strokeWidth="6" />
+                        <circle cx="0" cy="240" r="20" fill="#facc15" />
                     </g>
                   </svg>
 
@@ -307,27 +306,39 @@
                 </div>
               </div>
 
-              {/* --- MURAL --- */}
+              {/* --- MURAL COLORIDO (ESTILO POST-IT RECUPERADO) --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
-                <div className="bg-white rounded-[20px] p-4 shadow-inner border border-gray-200 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
+                
+                <div className="bg-white/50 backdrop-blur-sm rounded-[20px] p-4 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
                   {messages.length === 0 ? <div className="text-center text-gray-400 font-quicksand text-lg italic py-8">Aún no hay mensajes.</div> : 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {messages.map((m, idx) => (
-                        <div key={idx} className={`bg-[#f0f9ff] p-6 rounded-lg shadow-sm border border-blue-50 transform ${idx % 2 === 0 ? 'rotate-1' : '-rotate-1'} hover:rotate-0 transition-all`}>
-                            <div className="flex justify-between mb-3 border-b border-blue-100 pb-2"><span className="font-bold text-[#0098d9] uppercase text-sm tracking-wider truncate mr-2">{m.name}</span><span className="text-red-400 text-sm">📌</span></div>
-                            <p className="text-gray-700 font-quicksand italic text-lg leading-relaxed line-clamp-6">"{m.message}"</p>
-                        </div>
-                      ))}
+                      {messages.map((m, idx) => {
+                        // Color de fondo cíclico
+                        const bgColor = postItColors[idx % postItColors.length];
+                        // Rotación alterna para efecto "pegado a mano"
+                        const rotate = idx % 2 === 0 ? 'rotate-1' : '-rotate-1';
+                        
+                        return (
+                          <div key={idx} className={`${bgColor} p-6 rounded-lg shadow-md transform ${rotate} hover:rotate-0 transition-all hover:scale-105 text-gray-800`}>
+                              <div className="flex justify-between mb-3 border-b border-black/10 pb-2">
+                                <span className="font-bold text-black/70 uppercase text-sm tracking-wider truncate mr-2">{m.name}</span>
+                                <span className="text-lg">📌</span>
+                              </div>
+                              {/* Texto grande y oscuro para que se lea bien sobre el color */}
+                              <p className="font-quicksand font-medium text-lg leading-relaxed line-clamp-6">"{m.message}"</p>
+                          </div>
+                        );
+                      })}
                     </div>
                   }
                 </div>
               </div>
 
-              {/* --- PIE DE PÁGINA --- */}
+              {/* --- PIE DE PÁGINA AZUL MARINO --- */}
               <div className="w-full max-w-xl px-2 mb-8">
-                  <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
-                    <p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
+                  <div className="bg-[#001f3f] rounded-2xl p-5 text-center shadow-xl transform hover:scale-105 transition-all">
+                    <p className="text-white text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
                         <span>🎨</span>
                         <span>Cada eco financia alegría y terapia para los niños</span>
                         <span>💜</span>
