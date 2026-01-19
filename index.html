@@ -42,11 +42,8 @@
             100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
         }
         .particle {
-            position: absolute;
-            top: 50%; left: 50%;
-            pointer-events: none;
-            animation: pop-particle 1s ease-out forwards;
-            font-size: 24px;
+            position: absolute; top: 50%; left: 50%; pointer-events: none;
+            animation: pop-particle 1s ease-out forwards; font-size: 24px;
         }
     </style>
 </head>
@@ -178,25 +175,32 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- HEADER CON NUEVA IMAGEN --- */}
-              <header className="text-center w-full max-w-4xl px-2 mt-2 mb-2 animate-in fade-in slide-in-from-top duration-700">
-                
-                {/* Logo Fundación (Pequeño y Oscuro) */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" 
-                     alt="Logo FAUS" 
-                     className="h-10 md:h-12 mx-auto mb-2 object-contain filter invert opacity-80" /> 
-
-                {/* NUEVA IMAGEN PRINCIPAL (Centrada) */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
+              {/* --- 1. IMAGEN PRINCIPAL --- */}
+              <header className="text-center w-full max-w-4xl px-0 mt-0 mb-6 animate-in fade-in slide-in-from-top duration-700">
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil1.jpg" 
                      alt="Campaña Toca la Campana" 
-                     className="w-full max-w-md mx-auto mb-2 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
-                
-                <p className="text-xs md:text-sm font-bold text-[#0098d9] uppercase tracking-widest mb-4">
-                    por LA FUNDACIÓN ABRAZA UN SUEÑO
-                </p>
+                     className="w-full max-w-lg mx-auto rounded-b-xl shadow-sm object-contain" />
               </header>
 
-              {/* CAMPANA + DESTELLOS */}
+              {/* --- 2. TEXTO EXPLICATIVO (Nuevo Diseño) --- */}
+              <div className="w-full max-w-2xl px-6 mb-10 text-center">
+                  <h2 className="font-lilita text-4xl text-[#001f3f] mb-3">¿Qué significa tocar la campana?</h2>
+                  
+                  <p className="font-quicksand text-lg text-[#116cc5] font-bold leading-tight mb-4">
+                      Tocar la campana significa haber ganado una batalla contra el cáncer
+                  </p>
+                  
+                  <p className="font-quicksand text-gray-600 text-base leading-relaxed mb-4">
+                      En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento. 
+                      No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
+                  </p>
+                  
+                  <p className="font-quicksand text-gray-500 text-sm italic">
+                      "Y cuando suena, deja una certeza en el aire: la esperanza es real… y puede volver a sonar para otros niños."
+                  </p>
+              </div>
+
+              {/* --- 3. CAMPANA + DESTELLOS --- */}
               <div className="relative mb-6 flex items-center justify-center h-48 md:h-60 pointer-events-none">
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0s' }}></div>
                 <div className="wave-ring w-48 h-48 md:w-64 md:h-64" style={{ animationDelay: '0.6s' }}></div>
@@ -220,19 +224,19 @@
                 </div>
               </div>
 
-              {/* BOTÓN AZUL */}
-              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-2xl md:text-3xl px-12 py-4 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-4 border-[#00699b] flex items-center gap-3">
+              {/* --- 4. BOTÓN AZUL --- */}
+              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl px-14 py-5 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-4 border-[#00699b] flex items-center gap-3">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* TARJETA META */}
-              <div className="bg-white rounded-3xl p-6 shadow-xl w-full max-w-xl text-center mb-8 border border-gray-100">
-                  <p className="text-gray-700 font-quicksand text-lg">
-                      Cada <span className="font-lilita text-[#ffd058] text-2xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
+              {/* --- 5. TARJETA META --- */}
+              <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-lg text-center mb-8 border border-gray-100">
+                  <p className="text-gray-600 font-quicksand text-lg font-medium">
+                      Cada <span className="font-lilita text-[#ffd058] text-3xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
                   </p>
               </div>
 
-              {/* CONTADORES */}
+              {/* --- 6. CONTADORES (Estilo Tarjeta Azul/Amarillo) --- */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
                 <div className="bg-[#0098d9] rounded-2xl p-6 text-center shadow-lg text-white">
                   <div className="font-lilita text-6xl mb-1">{workshops}</div>
@@ -244,17 +248,19 @@
                 </div>
               </div>
 
-              {/* Tarjeta con Foto */}
-              <div className="w-full max-w-2xl px-4 mb-10">
-                <div className="bg-white rounded-3xl p-6 text-center shadow-lg border border-gray-100">
-                    <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/ARTETERAPIA-FAUS-.png" alt="Niños" className="w-full h-56 md:h-64 object-cover rounded-2xl mb-6 shadow-sm" />
-                    <p className="text-gray-600 font-quicksand text-base md:text-lg leading-relaxed">
-                        "Y cuando suena, deja una certeza en el aire: la esperanza es real… y puede volver a sonar para otros niños."
-                    </p>
+              {/* --- 7. BARRA PROGRESO --- */}
+              <div className="w-full max-w-2xl mb-10 px-2">
+                <div className="bg-[#0098d9] rounded-full p-2 shadow-inner">
+                  <div className="bg-white/20 h-8 rounded-full overflow-hidden relative">
+                    <div className="h-full bg-[#ffd058]" style={{ width: `${(progress / 20) * 100}%`, transition: 'width 1s ease' }}></div>
+                    <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md text-sm md:text-base">
+                      ¡Solo faltan {20 - progress} ecos para el próximo taller! 🎨✨
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* MURAL */}
+              {/* --- 8. MURAL --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 <div className="bg-white rounded-[20px] p-4 shadow-inner border border-gray-200 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
@@ -271,7 +277,7 @@
                 </div>
               </div>
 
-              {/* PIE DE PÁGINA */}
+              {/* --- 9. PIE DE PÁGINA --- */}
               <div className="w-full max-w-xl px-2 mb-8">
                   <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-b-4 border-[#ffd058] transform hover:scale-105 transition-all">
                     <p className="text-[#116cc5] text-xl font-bold flex flex-col md:flex-row items-center justify-center gap-2">
