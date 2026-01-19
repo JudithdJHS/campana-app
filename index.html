@@ -185,6 +185,7 @@
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
+          // COLORES PARA EL MURAL
           const postItColors = [
             'bg-[#ffe66d]', 'bg-[#ffc6ff]', 'bg-[#9bf6ff]', 'bg-[#ffd6a5]', 'bg-[#caffbf]'
           ];
@@ -199,7 +200,7 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* HEADER */}
+              {/* --- HEADER --- */}
               <header className="text-center w-full max-w-4xl px-2 mt-4 mb-2 animate-in fade-in slide-in-from-top duration-700">
                 <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
                      alt="Campaña Toca la Campana" 
@@ -210,29 +211,24 @@
                 </p>
               </header>
 
-              {/* --- TEXTO EXPLICATIVO AGRANDADO --- */}
+              {/* --- TEXTO EXPLICATIVO --- */}
               <div className="w-full max-w-3xl px-4 mb-4 text-center">
-                  {/* Título más grande */}
                   <h2 className="font-lilita text-5xl md:text-6xl text-[#001f3f] mb-3">¿Qué significa tocar la campana?</h2>
-                  
-                  {/* Subtítulo más grande y fuerte */}
                   <p className="font-quicksand text-2xl md:text-3xl text-[#116cc5] font-bold leading-tight mb-4">
                       Tocar la campana significa haber ganado una batalla contra el cáncer
                   </p>
-                  
-                  {/* Párrafo más grande y legible */}
                   <p className="font-quicksand text-gray-600 text-lg md:text-xl leading-relaxed mb-4">
                       En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento. 
                       No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
                   </p>
-                  
                   <p className="font-quicksand text-gray-500 text-base md:text-lg italic mt-2">
                       "Y cuando suena, deja una certeza en el aire: la esperanza es real… y puede volver a sonar para otros niños."
                   </p>
               </div>
 
-              {/* CAMPANA ESTILO CANVA */}
-              <div className="relative mt-4 mb-8 flex items-center justify-center h-60 md:h-72 pointer-events-none">
+              {/* --- CAMPANA --- */}
+              <div className="relative mb-6 flex items-center justify-center h-60 md:h-72 pointer-events-none mt-6">
+                
                 <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
                 <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1.2s' }}></div>
                 
@@ -242,6 +238,7 @@
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
                    
+                   {/* SVG CAMPANA CANVA */}
                    <svg width="250" height="250" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[320px] md:h-[320px]">
                     <g transform="translate(150, 50)">
                         <circle cx="0" cy="0" r="15" fill="#eab308" />
@@ -257,19 +254,19 @@
                 </div>
               </div>
 
-              {/* BOTÓN AZUL */}
-              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3">
+              {/* --- BOTÓN AZUL (MÁS ABAJO mt-12) --- */}
+              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3 mt-12">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* TARJETA META */}
+              {/* --- TARJETA META --- */}
               <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-lg text-center mb-8 border border-gray-100">
                   <p className="text-gray-600 font-quicksand text-lg font-medium">
                       Cada <span className="font-lilita text-[#ffd058] text-3xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
                   </p>
               </div>
 
-              {/* CONTADORES */}
+              {/* --- CONTADORES --- */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
                 <div className="bg-[#0098d9] rounded-2xl p-6 text-center shadow-lg text-white">
                   <div className="font-lilita text-6xl mb-1">{workshops}</div>
@@ -281,7 +278,7 @@
                 </div>
               </div>
 
-              {/* BARRA PROGRESO */}
+              {/* --- BARRA PROGRESO --- */}
               <div className="w-full max-w-2xl mb-12 px-2">
                 <div className="bg-[#0098d9] rounded-full p-2 shadow-inner">
                   <div className="bg-white/20 h-14 rounded-full overflow-hidden relative">
@@ -293,7 +290,7 @@
                 </div>
               </div>
 
-              {/* MURAL COLORIDO */}
+              {/* --- MURAL COLORIDO --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 
@@ -318,7 +315,7 @@
                 </div>
               </div>
 
-              {/* PIE DE PÁGINA */}
+              {/* --- PIE DE PÁGINA --- */}
               <div className="w-full max-w-xl px-2 mb-8">
                   <div className="rounded-2xl p-5 text-center shadow-xl transform hover:scale-105 transition-all" 
                        style={{ backgroundColor: '#2957a4', borderBottom: '6px solid #ffd058' }}>
