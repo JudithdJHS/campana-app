@@ -37,22 +37,7 @@
         }
         .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
         
-        /* ONDAS DE LUZ (Glow) */
-        @keyframes soft-glow { 
-            0% { transform: scale(0.8); opacity: 0.6; } 
-            100% { transform: scale(2.5); opacity: 0; } 
-        }
-        .glow-ring { 
-            position: absolute;
-            border-radius: 50%; 
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 215, 0, 0) 70%);
-            width: 100%; height: 100%;
-            animation: soft-glow 2.5s infinite; 
-            pointer-events: none; 
-            z-index: 0;
-        }
-        
-        /* ONDAS VISIBLES (Ripples) */
+        /* ONDAS VISIBLES (EFECTO SONIDO) */
         @keyframes ripple { 
             0% { transform: scale(0.8); opacity: 1; border-width: 6px; } 
             100% { transform: scale(2.4); opacity: 0; border-width: 0px; } 
@@ -61,7 +46,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             border-radius: 50%; 
-            border: 4px solid #facc15; 
+            border: 4px solid #facc15; /* Color amarillo de la campana */
             animation: ripple 2s infinite; 
             pointer-events: none; 
             z-index: 0;
@@ -215,27 +200,15 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- HEADER COMPLETO --- */}
+              {/* --- HEADER (IMAGEN NIÑO) --- */}
               <header className="text-center w-full max-w-4xl px-2 mt-4 mb-2 animate-in fade-in slide-in-from-top duration-700">
-                
-                {/* 1. Logo Fundación Pequeño */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-faus-blanco.png" 
-                     alt="Logo FAUS" 
-                     className="h-10 md:h-12 mx-auto mb-1 object-contain filter invert opacity-80" />
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil.jpg" 
+                     alt="Campaña Toca la Campana" 
+                     className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
                 
                 <p className="text-xs md:text-sm font-bold text-[#0098d9] uppercase tracking-widest mb-4">
                     by FUNDACIÓN ABRAZA UN SUEÑO
                 </p>
-
-                {/* 2. LOGO DE CAMPAÑA (¡AÑADIDO!) */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/logo-toca-la-campana.png" 
-                     alt="Logo Campaña" 
-                     className="w-full max-w-xs md:max-w-sm mx-auto mb-4 object-contain" />
-
-                {/* 3. IMAGEN DEL NIÑO */}
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil1.jpg" 
-                     alt="Niño Campaña" 
-                     className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
               </header>
 
               {/* --- TEXTO EXPLICATIVO --- */}
@@ -287,14 +260,14 @@
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* TARJETA META */}
+              {/* --- TARJETA META --- */}
               <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-lg text-center mb-8 border border-gray-100">
                   <p className="text-gray-600 font-quicksand text-lg font-medium">
                       Cada <span className="font-lilita text-[#ffd058] text-3xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
                   </p>
               </div>
 
-              {/* CONTADORES */}
+              {/* --- CONTADORES --- */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mb-8">
                 <div className="bg-[#0098d9] rounded-2xl p-6 text-center shadow-lg text-white">
                   <div className="font-lilita text-6xl mb-1">{workshops}</div>
@@ -306,7 +279,7 @@
                 </div>
               </div>
 
-              {/* BARRA PROGRESO */}
+              {/* --- BARRA PROGRESO --- */}
               <div className="w-full max-w-2xl mb-12 px-2">
                 <div className="bg-[#0098d9] rounded-full p-2 shadow-inner">
                   <div className="bg-white/20 h-14 rounded-full overflow-hidden relative">
@@ -318,7 +291,7 @@
                 </div>
               </div>
 
-              {/* MURAL COLORIDO */}
+              {/* --- MURAL COLORIDO --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 
