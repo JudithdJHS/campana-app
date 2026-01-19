@@ -37,7 +37,7 @@
         }
         .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
         
-        /* NUEVA ANIMACIÓN DE ONDAS (TIPO HALO DE LUZ) */
+        /* ONDAS DE LUZ (Glow) */
         @keyframes soft-glow { 
             0% { transform: scale(0.8); opacity: 0.6; } 
             100% { transform: scale(2.5); opacity: 0; } 
@@ -45,15 +45,14 @@
         .glow-ring { 
             position: absolute;
             border-radius: 50%; 
-            /* Fondo degradado suave en lugar de borde sólido */
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0) 70%);
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0) 70%);
             width: 100%; height: 100%;
             animation: soft-glow 2.5s infinite; 
             pointer-events: none; 
             z-index: 0;
         }
 
-        /* Animación de destellos (partículas) */
+        /* Destellos */
         @keyframes pop-particle {
             0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
@@ -186,6 +185,15 @@
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
+          // COLORES PARA LOS POST-ITS
+          const postItColors = [
+            'bg-[#ffe66d]', // Amarillo intenso
+            'bg-[#ffc6ff]', // Rosa
+            'bg-[#9bf6ff]', // Azul cielo
+            'bg-[#ffd6a5]', // Naranja suave
+            'bg-[#caffbf]'  // Verde suave
+          ];
+
           const particles = [
             {tx: '-80px', ty: '-80px', char: '❤️', d: '0s'}, {tx: '80px', ty: '-90px', char: '💛', d: '0.1s'},
             {tx: '-60px', ty: '10px', char: '💙', d: '0.2s'}, {tx: '70px', ty: '30px', char: '❤️', d: '0.1s'},
@@ -201,6 +209,10 @@
                 <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/Toca-la-campana-contra-el-cancer-infantil.jpg" 
                      alt="Campaña Toca la Campana" 
                      className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300 object-contain" />
+                
+                <p className="text-xs md:text-sm font-bold text-[#0098d9] uppercase tracking-widest mb-4">
+                    by FUNDACIÓN ABRAZA UN SUEÑO
+                </p>
               </header>
 
               {/* --- TEXTO EXPLICATIVO --- */}
@@ -219,67 +231,21 @@
               </div>
 
               {/* --- CAMPANA 3D GIGANTE + HALO DE LUZ --- */}
-              <div className="relative mb-6 flex items-center justify-center h-64 md:h-80 pointer-events-none">
-                
-                {/* Ondas de luz suave (Glow) */}
+              <div className="relative mb-6 flex items-center justify-center h-60 md:h-72 pointer-events-none">
                 <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
                 <div className="glow-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1.2s' }}></div>
                 
-                {/* Partículas */}
                 {isSwinging && particles.map((p, i) => (
                     <div key={i} className="particle" style={{ '--tx': p.tx, '--ty': p.ty, animationDelay: p.d }}>{p.char}</div>
                 ))}
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
-                   
-                   {/* NUEVA CAMPANA 3D CON DEGRADADOS */}
-                   <svg width="280" height="280" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[350px] md:h-[350px]">
-                    <defs>
-                        {/* Degradado Cuerpo Campana (Oro rico) */}
-                        <linearGradient id="bellBody" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#eeb609" />
-                            <stop offset="30%" stopColor="#ffd700" />
-                            <stop offset="60%" stopColor="#f3c21a" />
-                            <stop offset="100%" stopColor="#d4af37" />
-                        </linearGradient>
-                        {/* Degradado Sombra/Borde inferior */}
-                        <linearGradient id="bellRim" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#ffd700" />
-                            <stop offset="100%" stopColor="#b8860b" />
-                        </linearGradient>
-                        {/* Brillo */}
-                        <radialGradient id="bellShine" cx="30%" cy="30%" r="50%">
-                            <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
-                            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-                        </radialGradient>
-                    </defs>
-                    
-                    <g transform="translate(150, 50)">
-                        {/* Soporte Superior */}
-                        <path d="M -40 0 Q 0 -15 40 0 L 40 10 Q 0 20 -40 10 Z" fill="#b8860b" />
-                        
-                        {/* Cuerpo Campana */}
-                        <path d="M -60 180 
-                                 Q -70 80 -40 20 
-                                 L 40 20 
-                                 Q 70 80 60 180 
-                                 Q 100 190 100 210 
-                                 L -100 210 
-                                 Q -100 190 -60 180 Z" 
-                              fill="url(#bellBody)" stroke="#b8860b" strokeWidth="2" />
-                        
-                        {/* Borde Inferior (Rim) */}
-                        <path d="M -100 210 Q 0 230 100 210 L 100 220 Q 0 240 -100 220 Z" fill="url(#bellRim)" />
-                        
-                        {/* Badajo (Pendulo) */}
-                        <line x1="0" y1="20" x2="0" y2="220" stroke="#5c4033" strokeWidth="8" />
-                        <circle cx="0" cy="235" r="20" fill="#5c4033" />
-                        
-                        {/* Brillo para efecto 3D */}
-                        <ellipse cx="-30" cy="100" rx="20" ry="60" fill="url(#bellShine)" transform="rotate(10)" />
-                    </g>
-                  </svg>
-
+                   {/* IMAGEN DE CAMPANA DORADA REAL */}
+                   <img 
+                       src="https://cdn-icons-png.flaticon.com/512/9626/9626677.png" 
+                       alt="Campana Dorada" 
+                       className="w-48 h-48 md:w-60 md:h-60 object-contain drop-shadow-2xl" 
+                   />
                 </div>
               </div>
 
@@ -319,18 +285,28 @@
                 </div>
               </div>
 
-              {/* --- MURAL --- */}
+              {/* --- MURAL COLORIDO ESTILO POST-IT --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
-                <div className="bg-white rounded-[20px] p-4 shadow-inner border border-gray-200 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
+                
+                <div className="bg-white/50 backdrop-blur-sm rounded-[20px] p-4 min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar">
                   {messages.length === 0 ? <div className="text-center text-gray-400 font-quicksand text-lg italic py-8">Aún no hay mensajes.</div> : 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {messages.map((m, idx) => (
-                        <div key={idx} className={`bg-[#f0f9ff] p-6 rounded-lg shadow-sm border border-blue-50 transform ${idx % 2 === 0 ? 'rotate-1' : '-rotate-1'} hover:rotate-0 transition-all`}>
-                            <div className="flex justify-between mb-3 border-b border-blue-100 pb-2"><span className="font-bold text-[#0098d9] uppercase text-sm tracking-wider truncate mr-2">{m.name}</span><span className="text-red-400 text-sm">📌</span></div>
-                            <p className="text-gray-700 font-quicksand italic text-lg leading-relaxed line-clamp-6">"{m.message}"</p>
-                        </div>
-                      ))}
+                      {messages.map((m, idx) => {
+                        // Selección de color cíclica
+                        const bgColor = postItColors[idx % postItColors.length];
+                        const rotate = idx % 2 === 0 ? 'rotate-1' : '-rotate-1';
+                        
+                        return (
+                          <div key={idx} className={`${bgColor} p-6 rounded-lg shadow-md transform ${rotate} hover:rotate-0 transition-all hover:scale-105 text-gray-800`}>
+                              <div className="flex justify-between mb-3 border-b border-black/10 pb-2">
+                                <span className="font-bold text-black/70 uppercase text-sm tracking-wider truncate mr-2">{m.name}</span>
+                                <span className="text-lg">📌</span>
+                              </div>
+                              <p className="font-quicksand font-medium text-lg leading-relaxed line-clamp-6">"{m.message}"</p>
+                          </div>
+                        );
+                      })}
                     </div>
                   }
                 </div>
