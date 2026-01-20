@@ -214,36 +214,20 @@
                 </p>
               </header>
 
-              {/* --- TEXTO EXPLICATIVO --- */}
-              <div className="w-full max-w-3xl px-4 mb-4 text-center">
-                  <h2 className="font-lilita text-5xl md:text-6xl text-[#001f3f] mb-3">¿Qué significa tocar la campana?</h2>
-                  <p className="font-quicksand text-2xl md:text-3xl text-[#116cc5] font-bold leading-tight mb-4">
-                      Tocar la campana significa haber ganado una batalla contra el cáncer
+              {/* --- TEXTO EXPLICATIVO (NUEVO) --- */}
+              <div className="w-full max-w-3xl px-4 mb-8 text-center">
+                  <h2 className="font-lilita text-4xl md:text-5xl text-[#001f3f] mb-4">
+                      🔔 Toca la campana, cambia una vida
+                  </h2>
+                  <p className="font-quicksand text-lg md:text-xl text-[#116cc5] font-bold leading-tight mb-3">
+                      Un gesto de victoria que llega al hospital
                   </p>
-                  <p className="font-quicksand text-gray-600 text-lg md:text-xl leading-relaxed mb-4">
-                      En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento. 
-                      No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
-                  </p>
-                  <p className="font-quicksand text-gray-500 text-base md:text-lg italic mt-2 mb-6">
-                      "Y cuando suena, deja una certeza en el aire: que la esperanza es real… y puede volver a sonar para otros niños."
+                  <p className="font-quicksand text-gray-600 text-base md:text-lg leading-relaxed mb-8">
+                      En oncología infantil, tocar la campana celebra el fin de una etapa. Hoy, tú puedes hacer que ese sonido se convierta en alivio real para quienes siguen luchando.
                   </p>
 
-                  <div className="mt-8 space-y-4">
-                      <p className="font-quicksand text-[#116cc5] text-2xl md:text-3xl font-bold leading-tight">
-                          Hoy te invitamos a hacer sonar la campana.
-                      </p>
-                      <p className="font-quicksand text-gray-700 text-lg md:text-xl font-medium">
-                          Cada campanada es un gesto de apoyo para los niños que siguen luchando contra el cáncer.
-                      </p>
-                      <p className="font-quicksand text-gray-600 text-base md:text-lg leading-relaxed">
-                          Cuando muchas personas hacen sonar la campana juntas, ese eco se transforma en talleres de arteterapia dentro del hospital, espacios donde los niños pueden expresar lo que sienten, aliviar el miedo y volver a sentirse niños, incluso en medio del tratamiento.
-                      </p>
-                  </div>
-              </div>
-
-              {/* --- 3 PASOS --- */}
-              <div className="w-full max-w-3xl px-4 mb-8 text-center mt-6">
-                  <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100 text-left">
+                  {/* --- CAJA DE 3 PASOS --- */}
+                  <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100 text-left mb-8">
                       <h3 className="font-lilita text-3xl text-[#0098d9] mb-6 text-center">¿Cómo funciona tu impacto?</h3>
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -264,7 +248,7 @@
                           {/* Paso 3 */}
                           <div className="flex flex-col items-center text-center">
                               <div className="w-20 h-20 bg-[#ffd058] rounded-full flex items-center justify-center font-lilita text-4xl text-[#116cc5] mb-4 shadow-sm">3</div>
-                              <h4 className="font-bold text-[#001f3f] text-2xl mb-1">Crea esperanza</h4>
+                              <h4 className="font-bold text-[#001f3f] text-2xl mb-2">Crea esperanza</h4>
                               <p className="text-lg text-gray-600 leading-relaxed">Por cada <strong>20 campanadas</strong>, financiamos un <strong>Taller de Arteterapia</strong>.</p>
                           </div>
                       </div>
@@ -303,12 +287,13 @@
                   <p className="text-sm md:text-base text-[#0098d9] font-bold mb-2 animate-pulse">
                       ✨ Tu mensaje se verá en el Mural de la Esperanza
                   </p>
+
                   <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3">
                     ¡HACER SONAR! <span>🔔</span>
                   </button>
               </div>
 
-              {/* --- TARJETA META --- */}
+              {/* --- TARJETA META (TEXTO ACTUALIZADO) --- */}
               <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-2xl text-center mb-8 border border-gray-100">
                   <p className="text-gray-700 font-quicksand text-xl font-medium leading-relaxed">
                       Cada <span className="font-lilita text-[#ffd058] text-3xl">20 campanadas</span>, un niño que lucha contra el cáncer recibe un taller de arteterapia en el hospital, un espacio de acompañamiento emocional en medio de su tratamiento. 🎨💙
