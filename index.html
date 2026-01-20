@@ -214,38 +214,49 @@
                 </p>
               </header>
 
-              {/* --- TEXTO EXPLICATIVO --- */}
-              <div className="w-full max-w-3xl px-4 mb-4 text-center">
-                  <h2 className="font-lilita text-5xl md:text-6xl text-[#001f3f] mb-3">¿Qué significa tocar la campana?</h2>
-                  <p className="font-quicksand text-2xl md:text-3xl text-[#116cc5] font-bold leading-tight mb-4">
-                      Tocar la campana significa haber ganado una batalla contra el cáncer
+              {/* --- TEXTO EXPLICATIVO (NUEVO DISEÑO CON PASOS) --- */}
+              <div className="w-full max-w-3xl px-4 mb-8 text-center">
+                  <h2 className="font-lilita text-4xl md:text-5xl text-[#001f3f] mb-4">
+                      🔔 Toca la campana, cambia una vida
+                  </h2>
+                  <p className="font-quicksand text-lg md:text-xl text-[#116cc5] font-bold leading-tight mb-3">
+                      Un gesto de victoria que llega al hospital
                   </p>
-                  <p className="font-quicksand text-gray-600 text-lg md:text-xl leading-relaxed mb-6">
-                      En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento. 
-                      No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
+                  <p className="font-quicksand text-gray-600 text-base md:text-lg leading-relaxed mb-8">
+                      En oncología infantil, tocar la campana celebra el fin de una etapa. Hoy, tú puedes hacer que ese sonido se convierta en alivio real para quienes siguen luchando.
                   </p>
-                  
-                  {/* --- NUEVO TEXTO DE INVITACIÓN --- */}
-                  <div className="mt-8 space-y-4 bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                      <p className="font-quicksand text-[#116cc5] text-2xl md:text-3xl font-bold leading-tight">
-                          Hoy te invitamos a hacer sonar la campana.
-                      </p>
-                      <p className="font-quicksand text-gray-700 text-lg md:text-xl leading-relaxed">
-                          Al hacerlo, no solo envías un mensaje de esperanza a los niños que siguen luchando contra el cáncer.
-                      </p>
-                      <p className="font-quicksand text-gray-700 text-lg md:text-xl leading-relaxed">
-                          Tu mensaje aparecerá en el <strong className="text-[#0098d9]">Mural de la Esperanza</strong>, donde se reúnen las voces de personas que creen, acompañan y no sueltan la mano.
-                      </p>
-                      <p className="font-quicksand text-gray-600 text-base md:text-lg leading-relaxed italic mt-4">
-                          Cuando muchas personas hacen sonar la campana juntas, ese eco se transforma en algo real:
-                          <br/>
-                          <span className="font-bold text-[#ffd058] not-italic text-lg md:text-xl">cada 20 campanadas, un niño recibe un taller de arteterapia en el hospital, un espacio de acompañamiento emocional en medio de su tratamiento.</span>
-                      </p>
+
+                  {/* CAJA DE PASOS ¿CÓMO FUNCIONA? */}
+                  <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100 text-left">
+                      <h3 className="font-lilita text-2xl text-[#0098d9] mb-4 text-center">¿Cómo funciona tu impacto?</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          {/* Paso 1 */}
+                          <div className="flex flex-col items-center text-center">
+                              <div className="w-10 h-10 bg-[#ffd058] rounded-full flex items-center justify-center font-bold text-white mb-2">1</div>
+                              <h4 className="font-bold text-[#001f3f] mb-1">Haz sonar la campana</h4>
+                              <p className="text-sm text-gray-600">Únete simbólicamente a la alegría de vencer el cáncer.</p>
+                          </div>
+                          
+                          {/* Paso 2 */}
+                          <div className="flex flex-col items-center text-center">
+                              <div className="w-10 h-10 bg-[#ffd058] rounded-full flex items-center justify-center font-bold text-white mb-2">2</div>
+                              <h4 className="font-bold text-[#001f3f] mb-1">Deja un mensaje</h4>
+                              <p className="text-sm text-gray-600">Tu voz aparecerá en el <strong>Mural de la Esperanza</strong> para animar a otros niños.</p>
+                          </div>
+
+                          {/* Paso 3 */}
+                          <div className="flex flex-col items-center text-center">
+                              <div className="w-10 h-10 bg-[#ffd058] rounded-full flex items-center justify-center font-bold text-white mb-2">3</div>
+                              <h4 className="font-bold text-[#001f3f] mb-1">Crea esperanza</h4>
+                              <p className="text-sm text-gray-600">Por cada <strong>20 campanadas</strong>, financiamos un <strong>Taller de Arteterapia</strong> en el hospital.</p>
+                          </div>
+                      </div>
                   </div>
               </div>
 
               {/* --- CAMPANA --- */}
-              <div className="relative mt-8 mb-10 flex items-center justify-center h-64 md:h-80 pointer-events-none">
+              <div className="relative mt-8 mb-4 flex items-center justify-center h-64 md:h-80 pointer-events-none">
                 <div className="ripple-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '0s' }}></div>
                 <div className="ripple-ring w-64 h-64 md:w-80 md:h-80" style={{ animationDelay: '1s' }}></div>
                 
@@ -254,7 +265,6 @@
                 ))}
 
                 <div onClick={handleRing} className={`cursor-pointer z-10 relative transition-all hover:scale-110 active:scale-95 pointer-events-auto ${isSwinging ? 'bell-swing' : ''}`}>
-                   
                    {/* SVG CAMPANA CANVA */}
                    <svg width="250" height="250" viewBox="0 0 300 300" className="drop-shadow-2xl md:w-[320px] md:h-[320px]">
                     <g transform="translate(150, 50)">
@@ -267,20 +277,18 @@
                         <circle cx="0" cy="240" r="25" fill="#facc15" />
                     </g>
                   </svg>
-
                 </div>
               </div>
 
-              {/* --- BOTÓN AZUL --- */}
-              <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3 mt-12">
-                ¡HACER SONAR! <span>🔔</span>
-              </button>
-
-              {/* --- TARJETA META (TEXTO RESUMIDO) --- */}
-              <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-2xl text-center mb-8 border border-gray-100">
-                  <p className="text-gray-700 font-quicksand text-xl font-medium leading-relaxed">
-                      Cada <span className="font-lilita text-[#ffd058] text-3xl">20 campanadas</span> financiamos un taller de arteterapia. 🎨💙
+              {/* --- MICRO-REFUERZO Y BOTÓN --- */}
+              <div className="flex flex-col items-center mt-4">
+                  <p className="text-sm md:text-base text-[#0098d9] font-bold mb-2 animate-pulse">
+                      ✨ Tu mensaje se verá en el Mural de la Esperanza
                   </p>
+
+                  <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3">
+                    ¡HACER SONAR! <span>🔔</span>
+                  </button>
               </div>
 
               {/* --- CONTADORES --- */}
