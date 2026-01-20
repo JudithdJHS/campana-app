@@ -200,7 +200,7 @@
           return (
             <div className="min-h-screen w-full font-sans text-gray-800 overflow-x-hidden p-2 flex flex-col items-center pb-10">
               
-              {/* --- HEADER (IMAGEN NIÑO) --- */}
+              {/* --- HEADER --- */}
               <header className="text-center w-full max-w-4xl px-2 mt-4 mb-2 animate-in fade-in slide-in-from-top duration-700">
                 <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil.jpg" 
                      alt="Campaña Toca la Campana" 
@@ -211,7 +211,7 @@
                 </p>
               </header>
 
-              {/* --- TEXTO EXPLICATIVO --- */}
+              {/* --- TEXTO EXPLICATIVO ACTUALIZADO --- */}
               <div className="w-full max-w-3xl px-4 mb-4 text-center">
                   <h2 className="font-lilita text-5xl md:text-6xl text-[#001f3f] mb-3">¿Qué significa tocar la campana?</h2>
                   <p className="font-quicksand text-2xl md:text-3xl text-[#116cc5] font-bold leading-tight mb-4">
@@ -221,12 +221,14 @@
                       En oncología pediátrica, es el gesto con el que muchos niños celebran el final de una etapa dura del tratamiento. 
                       No borra todo lo vivido, pero honra el coraje, la resistencia y la vida.
                   </p>
-                  <p className="font-quicksand text-gray-500 text-base md:text-lg italic mt-2">
-                      "Y cuando suena, deja una certeza en el aire: que la esperanza es real… y puede volver a sonar para otros niños."
+                  
+                  {/* NUEVA FRASE DE INVITACIÓN */}
+                  <p className="font-quicksand text-[#116cc5] text-xl md:text-2xl font-bold mt-6 mb-2 leading-relaxed">
+                      Hoy te invitamos a hacer sonar la campana y enviar un mensaje de esperanza.
                   </p>
               </div>
 
-              {/* --- CAMPANA (SEPARADA DEL BOTÓN) + ONDAS VISIBLES --- */}
+              {/* --- CAMPANA CON ONDAS --- */}
               <div className="relative mt-8 mb-10 flex items-center justify-center h-64 md:h-80 pointer-events-none">
                 
                 {/* Ondas Amarillas Visibles */}
@@ -255,15 +257,15 @@
                 </div>
               </div>
 
-              {/* --- BOTÓN AZUL (CON MARGEN ARRIBA) --- */}
+              {/* --- BOTÓN AZUL --- */}
               <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3 mt-12">
                 ¡HACER SONAR! <span>🔔</span>
               </button>
 
-              {/* --- TARJETA META --- */}
-              <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-lg text-center mb-8 border border-gray-100">
-                  <p className="text-gray-600 font-quicksand text-lg font-medium">
-                      Cada <span className="font-lilita text-[#ffd058] text-3xl">20 ecos</span> financiamos un taller de arteterapia para niños en el hospital 🎨💙
+              {/* --- TARJETA META (TEXTO ACTUALIZADO) --- */}
+              <div className="bg-white rounded-2xl p-6 shadow-md w-full max-w-2xl text-center mb-8 border border-gray-100">
+                  <p className="text-gray-700 font-quicksand text-xl font-medium leading-relaxed">
+                      Cada <span className="font-lilita text-[#ffd058] text-3xl">20 campanadas</span>, un niño que lucha contra el cáncer recibe un taller de arteterapia en el hospital, un espacio de acompañamiento emocional en medio de su tratamiento. 🎨💙
                   </p>
               </div>
 
