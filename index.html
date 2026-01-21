@@ -79,7 +79,7 @@
         import React, { useState, useEffect, useRef } from 'react';
         import { createRoot } from 'react-dom/client';
         import { initializeApp } from 'firebase/app';
-        // AQUI AÑADIMOS 'query', 'orderBy' y 'limit' PARA OPTIMIZAR
+        // AQUI ESTÁ EL CAMBIO IMPORTANTE: Importamos query, orderBy y limit
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
@@ -117,14 +117,14 @@
             return onAuthStateChanged(auth, setUser);
           }, []);
 
-          // Datos (OPTIMIZADO)
+          // Datos (OPTIMIZADO A LOS ÚLTIMOS 30 MENSAJES)
           useEffect(() => {
-            // LEADS: Seguimos leyendo todos para el contador (aceptable para <10k leads)
+            // Leads (todos para el contador)
             const unsubLeads = onSnapshot(collection(db, 'leads'), s => setLeads(s.docs.map(d => ({id:d.id, ...d.data()}))));
             
-            // MENSAJES: AQUI ESTA LA MAGIA DEL AHORRO
-            // Solo traemos los últimos 50 mensajes. Esto evita leer miles de documentos si la campaña crece.
-            const q = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(50));
+            // Mensajes (SOLO LOS ÚLTIMOS 30)
+            // Esto hace que la web cargue rápido y ahorres recursos
+            const q = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(30));
             
             const unsubMsgs = onSnapshot(q, s => {
                 const data = s.docs.map(d => ({id:d.id, ...d.data()}));
@@ -239,7 +239,7 @@
                       <p className="font-quicksand text-[#116cc5] text-2xl md:text-3xl font-bold leading-tight">
                           Hoy te invitamos a hacer sonar la campana.
                       </p>
-                      <p className="font-quicksand text-gray-700 text-lg md:text-xl font-medium">
+                      <p className="font-quicksand text-gray-700 text-lg md:text-xl leading-relaxed font-medium">
                           Cada campanada es un gesto de apoyo para los niños que siguen luchando contra el cáncer.
                       </p>
                       <p className="font-quicksand text-gray-600 text-base md:text-lg leading-relaxed">
@@ -310,7 +310,6 @@
                   <p className="text-sm md:text-base text-[#0098d9] font-bold mb-2 animate-pulse">
                       ✨ Tu mensaje se verá en el Mural de la Esperanza
                   </p>
-
                   <button onClick={handleRing} className="relative z-50 bg-[#0098d9] text-white font-lilita text-3xl md:text-4xl px-14 py-6 rounded-full shadow-xl hover:bg-[#007bb5] hover:scale-105 active:scale-95 transition-all mb-8 border-b-8 border-[#00699b] flex items-center gap-3">
                     ¡HACER SONAR! <span>🔔</span>
                   </button>
@@ -347,7 +346,7 @@
                 </div>
               </div>
 
-              {/* --- MURAL COLORIDO --- */}
+              {/* --- MURAL COLORIDO (LIMITADO A 30) --- */}
               <div className="w-full max-w-4xl mb-10 px-2">
                 <div className="flex items-center justify-center gap-2 mb-4"><h2 className="font-lilita text-3xl md:text-4xl text-[#0098d9] drop-shadow-sm">Mural de Esperanza</h2><span className="text-3xl">💌</span></div>
                 
@@ -394,7 +393,7 @@
 
                   <div className="px-4">
                     <h3 className="font-lilita text-3xl md:text-4xl text-[#080808] mb-4">Algunas personas deciden hacer sonar la campana un poco más fuerte</h3>
-                    <p className="font-quicksand text-xl text-[#116cc5] font-bold mb-8">Haz que su eco llegue aún más lejos</p>
+                    <p className="font-quicksand text-xl text-[#116cc5] font-bold mb-8">Cuando eso ocurre, su eco se convierte en más talleres, más acompañamiento y más alivio para los niños.</p>
                   </div>
                   
                   <div className="bg-white rounded-none md:rounded-3xl p-1 md:p-8 shadow-xl border-y md:border border-gray-100 overflow-hidden w-full">
