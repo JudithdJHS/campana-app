@@ -11,8 +11,7 @@
 {
  alert('entra');
  console.log(formData);
-      await fetch("https://hook.eu2.make.com/p0bw71vzgtun0c2a7nkhq1g62jx4i62z
-", {
+      await fetch("https://hook.eu2.make.com/p0bw71vzgtun0c2a7nkhq1g62jx4i62z", {
         method: "POST",
         headers: { "Content-Type": "application/json"},
         body: JSON.stringify({
