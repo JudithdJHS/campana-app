@@ -7,11 +7,10 @@
           messagingSenderId: "641556114718",
           appId: "1:641556114718:web:0de23bcb20481b19a86d0f"
         }; 
-export const senmailer= (formData)=>
+ async function senmailer= (formData)=>
 {
  alert('entra');
  console.log(formData);
-   try {
       await fetch("https://connect.mailerlite.com/api", {
         method: "POST",
         headers: { "Content-Type": "application/json",
@@ -23,10 +22,5 @@ export const senmailer= (formData)=>
           fecha: new Date().toISOString()
         })
       });
-    } catch (webhookErr) {
-      console.error("Webhook Make falló:", webhookErr);
-      // NO rompemos la experiencia del usuario
-    }
-   
 }
-
+export{firebaseConfig,senmailer}
