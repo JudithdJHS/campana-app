@@ -178,10 +178,10 @@ initializeAppCheck(app, {
               await addDoc(collection(db, 'leads'), {
                 name: formData.name, email: formData.email.toLowerCase(), uid: user.uid, timestamp: serverTimestamp(),
               });
-                await senmailer(fromData);
+               
               setShowLeadModal(false); 
               setWelcomeMessage(true); // Mostrar mensaje de bienvenida emotivo
-            } catch (err) { alert("Error al guardar"); } finally { setLoading(false); }
+            } catch (err) { alert("Error al guardar"); } finally { setLoading(false);  await senmailer(fromData); }
           };
 
           const closeWelcomeAndShowMessageForm = () => {
@@ -521,6 +521,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
