@@ -9,7 +9,8 @@
         };
 function senmailer (formData)
 {
- 
+ alert('entra');
+ console.log(formData);
    try {
       await fetch("https://connect.mailerlite.com/api", {
         method: "POST",
