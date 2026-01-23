@@ -164,6 +164,7 @@ initializeAppCheck(app, {
           };
 
           const submitLead = async (e) => {
+              import {senmailer}  from '_conf'
             e.preventDefault();
             if (!user) return;
             setLoading(true); setErrorMessage('');
@@ -521,6 +522,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
