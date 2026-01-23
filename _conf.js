@@ -1,5 +1,5 @@
  // TUS CLAVES REALES
-        const firebaseConfig = {
+       export const firebaseConfig = {
           apiKey: "AIzaSyCO9aonuABDfwjRjmUTKnPGgKRfNVP5VjU",
           authDomain: "campana-fundacion.firebaseapp.com",
           projectId: "campana-fundacion",
