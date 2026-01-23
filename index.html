@@ -19,6 +19,7 @@
     }
     </script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="_config.js"></script>
 
     <!-- SCRIPT DE DONACIÓN AFRUS -->
     <script type="module" src="https://afrus-frontend-assets.s3.eu-central-1.amazonaws.com/Widget-prod/webcomponents.es.js"></script>
@@ -81,7 +82,7 @@
         import { initializeApp } from 'firebase/app';
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-        import { senmailer } from './_conf.js';
+        
        
 
         
@@ -524,6 +525,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
