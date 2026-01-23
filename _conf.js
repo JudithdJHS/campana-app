@@ -7,7 +7,7 @@
           messagingSenderId: "641556114718",
           appId: "1:641556114718:web:0de23bcb20481b19a86d0f"
         }; 
-export async const senmailer= (formData)
+export const senmailer= (formData)=>
 {
  alert('entra');
  console.log(formData);
