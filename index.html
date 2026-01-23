@@ -12,7 +12,8 @@
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
         "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+        "firebase/app-check": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check.js"
       }
     }
     </script>
@@ -27,11 +28,9 @@
         .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
         @keyframes ripple { 0% { transform: scale(0.8); opacity: 1; border-width: 6px; } 100% { transform: scale(2.4); opacity: 0; border-width: 0px; } }
         .ripple-ring { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; border: 4px solid #facc15; animation: ripple 2s infinite; pointer-events: none; z-index: 0; opacity: 0; }
-        @keyframes pop-particle { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; } }
-        .particle { position: absolute; top: 50%; left: 50%; pointer-events: none; animation: pop-particle 1s ease-out forwards; font-size: 24px; z-index: 20; }
     </style>
 </head>
-<body class="bg-gradient-to-b from-white to-blue-50">
+<body class="bg-gradient-to-b from-white to-blue-50 font-quicksand">
     <div id="root"></div>
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef } from 'react';
@@ -39,7 +38,7 @@
         import { initializeApp } from 'firebase/app';
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-        import { initializeAppCheck, ReCaptchaV3Provider } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check.js';
+        import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
         const firebaseConfig = {
           apiKey: "AIzaSyCO9aonuABDfwjRjmUTKnPGgKRfNVP5VjU",
@@ -55,7 +54,7 @@
         const db = getFirestore(app);
 
         initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider('6Lc-q1MsAAAAAO1Qpg2P-Oi3knv3XNxg4P3X40ZX'),
+          provider: new ReCaptchaV3Provider('6Lc-Q1MsAAAAAO1Qpg2P-oi3knv3XNxg4P3X40ZX'),
           isTokenAutoRefreshEnabled: true
         });
 
@@ -66,14 +65,10 @@
           const [showLeadModal, setShowLeadModal] = useState(false);
           const [showThanksModal, setShowThanksModal] = useState(false);
           const [welcomeMessage, setWelcomeMessage] = useState(false);
-          const [showSuccessPill, setShowSuccessPill] = useState(false);
-          const [showGoalModal, setShowGoalModal] = useState(false); // <--- ESTO FALTABA
+          const [showGoalModal, setShowGoalModal] = useState(false);
           const [isSwinging, setIsSwinging] = useState(false);
           const [formData, setFormData] = useState({ name: '', email: '', privacy: false });
           const [messageData, setMessageData] = useState('');
-          const [loading, setLoading] = useState(false);
-          const [errorMessage, setErrorMessage] = useState('');
-          const audioContextRef = useRef(null);
 
           useEffect(() => {
             signInAnonymously(auth).catch(e => console.error(e));
@@ -87,85 +82,72 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
-          // LÓGICA DE CELEBRACIÓN CADA 20
           useEffect(() => {
-            if (leads.length > 0 && leads.length % 20 === 0) {
-                setShowGoalModal(true);
-            }
+              if (leads.length > 0 && leads.length % 20 === 0) { setShowGoalModal(true); }
           }, [leads.length]);
 
           const handleRing = () => {
             setIsSwinging(true);
-            setTimeout(() => setIsSwinging(false), 1200);
-            setTimeout(() => { setShowLeadModal(true); setShowSuccessPill(true); }, 1500);
+            setTimeout(() => { setIsSwinging(false); setShowLeadModal(true); }, 1200);
           };
 
           const submitLead = async (e) => {
             e.preventDefault();
-            if (!user) return;
-            setLoading(true);
             try {
-              await addDoc(collection(db, 'leads'), { name: formData.name, email: formData.email.toLowerCase(), uid: user.uid, timestamp: serverTimestamp() });
+              await addDoc(collection(db, 'leads'), { name: formData.name, email: formData.email.toLowerCase(), timestamp: serverTimestamp() });
               setShowLeadModal(false); setWelcomeMessage(true);
-            } catch (err) { alert("Error"); } finally { setLoading(false); }
+            } catch (err) { alert("Error"); }
           };
-
-          const closeWelcomeAndShowMessageForm = () => {
-              setWelcomeMessage(false);
-              setShowThanksModal(true);
-          }
 
           const submitMessage = async (e) => {
             e.preventDefault();
-            if (!messageData.trim()) return;
-            setLoading(true);
             try {
-              await addDoc(collection(db, 'messages'), { name: formData.name || 'Anónimo', message: messageData, timestamp: serverTimestamp() });
+              await addDoc(collection(db, 'messages'), { name: formData.name || 'Amigo', message: messageData, timestamp: serverTimestamp() });
               setMessageData(''); setShowThanksModal(false);
-            } catch (err) { alert("Error"); } finally { setLoading(false); }
+            } catch (err) { alert("Error"); }
           };
 
-          const totalEchos = leads.length;
-          const workshops = Math.floor(totalEchos / 20);
-          const progress = totalEchos % 20;
+          const workshops = Math.floor(leads.length / 20);
+          const progress = leads.length % 20;
           const postItColors = ['bg-[#ffe66d]', 'bg-[#ffc6ff]', 'bg-[#9bf6ff]', 'bg-[#ffd6a5]', 'bg-[#caffbf]'];
-          const whatsappLink = "https://wa.me/573138123079?text=Hola%20he%20tocado%20la%20campana";
 
           return (
-            <div className="min-h-screen w-full font-sans text-gray-800 p-2 flex flex-col items-center pb-10">
-              <header className="text-center w-full max-w-4xl mt-4 mb-2">
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil.jpg" className="w-full max-w-md mx-auto mb-3 rounded-xl shadow-sm object-contain" />
-                <p className="text-xs font-bold text-[#0098d9] uppercase tracking-widest mb-4">by FUNDACIÓN ABRAZA UN SUEÑO</p>
+            <div className="min-h-screen w-full flex flex-col items-center p-2 pb-10">
+              <header className="text-center w-full max-w-4xl mt-4 mb-8">
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil.jpg" className="w-full max-w-md mx-auto rounded-xl shadow-sm" />
+                <p className="text-xs font-bold text-[#0098d9] uppercase tracking-widest mt-4">by FUNDACIÓN ABRAZA UN SUEÑO</p>
               </header>
 
               <div className="w-full max-w-3xl px-4 mb-12 text-center">
-                  <h2 className="font-lilita text-4xl text-[#0098d9] mb-6">¿Qué significa tocar la campana? 🔔</h2>
-                  <div className="bg-blue-50/50 border-l-4 border-[#ffd058] p-6 rounded-r-2xl mb-10 shadow-sm text-left">
-                      <p className="font-quicksand text-xl text-gray-700 italic">"Es el sonido de la victoria: el gesto con el que un niño celebra haber ganado una batalla contra el cáncer."</p>
+                  <h2 className="font-lilita text-4xl text-[#0098d9] mb-4 uppercase">¿Qué significa tocar la campana? 🔔</h2>
+                  <div className="bg-blue-50/50 border-l-4 border-[#ffd058] p-6 rounded-r-2xl shadow-sm text-left">
+                      <p className="font-quicksand text-xl text-gray-700 italic leading-relaxed">"Es el sonido de la victoria: el gesto con el que un niño celebra haber ganado una batalla contra el cáncer."</p>
                   </div>
               </div>
 
-              <div onClick={handleRing} className={`cursor-pointer mb-12 transform transition-transform hover:scale-105 active:scale-95 ${isSwinging ? 'bell-swing' : ''}`}>
-                <svg width="200" height="200" viewBox="0 0 300 300">
+              <div onClick={handleRing} className={`cursor-pointer mb-12 transition-transform hover:scale-105 active:scale-95 ${isSwinging ? 'bell-swing' : ''}`}>
+                <svg width="220" height="220" viewBox="0 0 300 300">
                   <g transform="translate(150, 50)">
                     <circle cx="0" cy="0" r="15" fill="#eab308" />
                     <path d="M -70 180 Q -90 60 -30 20 L 30 20 Q 90 60 70 180 Q 120 190 120 210 L -120 210 Q -120 190 -70 180 Z" fill="#facc15" />
+                    <line x1="0" y1="50" x2="0" y2="220" stroke="#ca8a04" strokeWidth="8" />
+                    <circle cx="0" cy="240" r="25" fill="#facc15" />
                   </g>
                 </svg>
               </div>
 
               <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-8">
-                <div className="bg-[#0098d9] rounded-2xl p-6 text-center text-white shadow-lg"><div className="font-lilita text-6xl">{workshops}</div><p className="text-xs uppercase font-bold">Talleres</p></div>
-                <div className="bg-[#ffd058] rounded-2xl p-6 text-center text-gray-800 shadow-lg"><div className="font-lilita text-6xl">{totalEchos}</div><p className="text-xs uppercase font-bold">Ecos</p></div>
+                <div className="bg-[#0098d9] rounded-2xl p-6 text-center text-white shadow-lg"><div className="font-lilita text-5xl">{workshops}</div><p className="text-xs font-bold uppercase">Talleres</p></div>
+                <div className="bg-[#ffd058] rounded-2xl p-6 text-center text-gray-800 shadow-lg"><div className="font-lilita text-5xl">{leads.length}</div><p className="text-xs font-bold uppercase">Ecos</p></div>
               </div>
 
-              <div className="w-full max-w-4xl mb-10 px-2">
-                <h2 className="font-lilita text-3xl text-center text-[#0098d9] mb-8 uppercase">Mural de Esperanza 💌</h2>
+              <div className="w-full max-w-4xl px-4">
+                <h2 className="font-lilita text-3xl text-center text-[#0098d9] mb-8 uppercase tracking-widest">Mural de Esperanza 💌</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {messages.map((m, i) => (
-                    <div key={i} className={`${postItColors[i % 5]} p-6 rounded-lg shadow-md rotate-${i%2===0?1:'-1'} transform transition-transform hover:rotate-0`}>
-                      <p className="font-quicksand font-medium">"{m.message}"</p>
-                      <p className="text-right font-bold text-xs mt-2">- {m.name}</p>
+                    <div key={i} className={`${postItColors[i % 5]} p-6 rounded-lg shadow-md transform rotate-${i%2===0?1:'-1'} transition-transform hover:rotate-0`}>
+                      <p className="font-quicksand font-medium text-gray-800">"{m.message}"</p>
+                      <p className="text-right font-lilita text-[#001f3f] mt-4">- {m.name}</p>
                     </div>
                   ))}
                 </div>
@@ -173,60 +155,57 @@
 
               <div className="w-full max-w-4xl mt-12 pb-20"><afrus-form form-id="cb73bc53-3aa1-4069-971e-f9edddf26191"></afrus-form></div>
 
-              {/* MODAL DE CELEBRACIÓN CADA 20 */}
-              {showGoalModal && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[200] p-4 backdrop-blur-md">
-                  <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in duration-500 text-center">
-                    <div className="bg-[#ffd058] p-8 text-[#001f3f]">
-                      <div className="text-6xl mb-4 animate-bounce">🔔</div>
-                      <h2 className="font-lilita text-3xl uppercase leading-tight">¡EL CIELO CELEBRA!</h2>
-                      <p className="font-bold opacity-80 mt-1 uppercase text-sm tracking-widest">Meta de {leads.length} campanadas</p>
-                    </div>
-                    <div className="p-8">
-                      <p className="font-quicksand text-gray-700 text-lg mb-6 leading-relaxed">
-                        ¡Lo has logrado! Hoy financiamos el <strong>Taller de Arteterapia nº {leads.length / 20}</strong> para Sofía y sus compañeros. Tu campanada ha sido el color que ella necesitaba hoy. 🎨✨
-                      </p>
-                      <button onClick={() => setShowGoalModal(false)} className="w-full bg-[#0098d9] text-white font-lilita text-2xl py-4 rounded-2xl shadow-lg uppercase">¡AMÉN! 🙏</button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* OTROS MODALES DE REGISTRO */}
               {showLeadModal && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                  <div className="bg-white rounded-[24px] w-full max-w-sm overflow-hidden p-6 animate-in zoom-in">
-                    <h2 className="font-lilita text-2xl text-center text-[#0098d9] mb-4 uppercase tracking-tighter">¡Tu eco ya resuena!</h2>
-                    <form onSubmit={submitLead} className="space-y-4">
-                      <input type="text" placeholder="Nombre" className="w-full border p-3 rounded-lg" onChange={e => setFormData({...formData, name: e.target.value})} required />
-                      <input type="email" placeholder="Email" className="w-full border p-3 rounded-lg" onChange={e => setFormData({...formData, email: e.target.value})} required />
-                      <button type="submit" className="w-full bg-[#ffd058] font-lilita text-xl py-3 rounded-xl uppercase shadow-md">Confirmar 🔔</button>
-                    </form>
-                  </div>
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[150] p-4 backdrop-blur-sm">
+                  <form onSubmit={submitLead} className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl">
+                    <div className="bg-[#0098d9] p-6 text-center text-white font-lilita text-2xl uppercase tracking-widest">¡Tu eco ya resuena!</div>
+                    <div className="p-6 space-y-4">
+                      <input type="text" placeholder="Nombre" className="w-full border p-4 rounded-xl outline-none focus:border-[#ffd058]" onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      <input type="email" placeholder="Email" className="w-full border p-4 rounded-xl outline-none focus:border-[#ffd058]" onChange={e => setFormData({...formData, email: e.target.value})} required />
+                      <button type="submit" className="w-full bg-[#ffd058] text-[#001f3f] font-lilita text-2xl py-4 rounded-xl shadow-lg uppercase">Confirmar 🔔</button>
+                    </div>
+                  </form>
                 </div>
               )}
 
               {welcomeMessage && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[101] p-4 backdrop-blur-sm">
-                  <div className="bg-white rounded-[24px] w-full max-w-md p-8 text-center animate-in zoom-in">
-                    <h2 className="font-lilita text-3xl mb-4 text-[#0098d9] uppercase">¡Gracias por tu eco!</h2>
-                    <p className="mb-6 font-quicksand text-lg text-gray-600">Tu registro es un latido de esperanza que se suma a esta gran causa.</p>
-                    <button onClick={closeWelcomeAndShowMessageForm} className="w-full bg-[#0098d9] text-white py-3 rounded-xl font-bold uppercase shadow-lg">Continuar</button>
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[160] p-4 backdrop-blur-sm">
+                  <div className="bg-white rounded-[32px] p-8 text-center max-w-sm shadow-2xl">
+                    <h2 className="font-lilita text-3xl text-[#0098d9] mb-4 uppercase">¡Gracias por tu eco!</h2>
+                    <p className="font-quicksand text-lg text-gray-600 mb-8">Tu registro es un latido de esperanza que se suma a esta gran causa.</p>
+                    <button onClick={() => { setWelcomeMessage(false); setShowThanksModal(true); }} className="w-full bg-[#0098d9] text-white py-4 rounded-xl font-lilita text-xl shadow-lg uppercase">Continuar</button>
                   </div>
                 </div>
               )}
 
               {showThanksModal && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                  <div className="bg-white rounded-[24px] w-full max-w-sm p-6 overflow-hidden animate-in zoom-in shadow-2xl">
-                    <h2 className="font-lilita text-xl text-center mb-4 text-[#0098d9] uppercase tracking-tighter tracking-tighter">¿Dejas un mensaje de esperanza?</h2>
-                    <form onSubmit={submitMessage}>
-                      <textarea className="w-full border p-4 rounded-lg h-32 mb-4 resize-none" placeholder="Escribe aquí tu mensaje..." onChange={e => setMessageData(e.target.value)}></textarea>
-                      <div className="flex gap-2">
-                        <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-3 bg-gray-100 rounded-lg font-bold text-gray-400 uppercase text-xs">Omitir</button>
-                        <button type="submit" className="flex-1 bg-[#0098d9] text-white py-3 rounded-lg font-bold uppercase shadow-lg text-xs">Enviar Eco 🚀</button>
-                      </div>
-                    </form>
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[150] p-4 backdrop-blur-sm">
+                  <form onSubmit={submitMessage} className="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl">
+                    <h2 className="font-lilita text-xl text-center mb-4 text-[#0098d9] uppercase">¿Dejas un mensaje de esperanza?</h2>
+                    <textarea className="w-full border p-4 rounded-xl h-36 mb-4 resize-none outline-none focus:border-[#ffd058]" placeholder="Escribe aquí tu mensaje..." onChange={e => setMessageData(e.target.value)}></textarea>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-3 bg-gray-100 rounded-lg font-bold text-gray-400 uppercase text-xs">Omitir</button>
+                      <button type="submit" className="flex-1 bg-[#0098d9] text-white py-3 rounded-lg font-bold uppercase shadow-lg text-xs">Enviar Eco 🚀</button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {showGoalModal && (
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[200] p-4 backdrop-blur-md">
+                  <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in duration-500 text-center">
+                    <div className="bg-[#ffd058] p-8 text-[#001f3f]">
+                      <div className="text-6xl mb-4 animate-bounce">🔔</div>
+                      <h2 className="font-lilita text-3xl uppercase leading-tight tracking-widest">¡EL CIELO CELEBRA!</h2>
+                      <p className="font-bold opacity-80 mt-1 uppercase text-sm tracking-widest">Meta de {leads.length} campanadas</p>
+                    </div>
+                    <div className="p-8">
+                      <p className="font-quicksand text-gray-700 text-lg mb-6 leading-relaxed">
+                        ¡Lo has logrado! Tú y otras 19 personas acaban de completar una nueva meta colectiva. 
+                        Hoy financiamos el <strong>Taller de Arteterapia nº {leads.length / 20}</strong> para Sofía y sus compañeros. 🎨✨
+                      </p>
+                      <button onClick={() => setShowGoalModal(false)} className="w-full bg-[#0098d9] text-white font-lilita text-3xl py-4 rounded-2xl shadow-lg uppercase">¡AMÉN! 🙏</button>
+                    </div>
                   </div>
                 </div>
               )}
