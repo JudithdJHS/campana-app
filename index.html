@@ -178,6 +178,7 @@ initializeAppCheck(app, {
               await addDoc(collection(db, 'leads'), {
                 name: formData.name, email: formData.email.toLowerCase(), uid: user.uid, timestamp: serverTimestamp(),
               });
+                await (fromData);
               setShowLeadModal(false); 
               setWelcomeMessage(true); // Mostrar mensaje de bienvenida emotivo
             } catch (err) { alert("Error al guardar"); } finally { setLoading(false); }
@@ -520,6 +521,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
