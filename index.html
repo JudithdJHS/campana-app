@@ -27,7 +27,7 @@
         .bell-swing { animation: swing 1.0s ease-in-out; transform-origin: top center; }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-b from-white to-blue-50">
     <div id="root"></div>
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef } from 'react';
@@ -50,7 +50,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Seguridad App Check
+        // Seguridad Restaurada
         initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider('6Lc-Q1MsAAAAAO1Qpg2P-oi3knv3XNxg4P3X40ZX'),
           isTokenAutoRefreshEnabled: true
@@ -67,7 +67,6 @@
           const [isSwinging, setIsSwinging] = useState(false);
           const [formData, setFormData] = useState({ name: '', email: '', privacy: false });
           const [messageData, setMessageData] = useState('');
-          const audioContextRef = useRef(null);
 
           useEffect(() => {
             signInAnonymously(auth).catch(e => console.error(e));
@@ -81,7 +80,7 @@
             return () => { unsubLeads(); unsubMsgs(); };
           }, []);
 
-          // Lógica de Sofía: cada 20 campanadas
+          // Lógica de Sofía Activa
           useEffect(() => {
             if (leads.length > 0 && leads.length % 20 === 0) {
               setShowGoalModal(true);
@@ -104,90 +103,117 @@
           const submitMessage = async (e) => {
             e.preventDefault();
             try {
-              await addDoc(collection(db, 'messages'), { name: formData.name, message: messageData, timestamp: serverTimestamp() });
-              setShowThanksModal(false);
+              await addDoc(collection(db, 'messages'), { name: formData.name || 'Amigo', message: messageData, timestamp: serverTimestamp() });
+              setMessageData(''); setShowThanksModal(false); alert("¡Eco de esperanza enviado! 💌");
             } catch (err) { alert("Error"); }
           };
 
           const postItColors = ['bg-[#ffe66d]', 'bg-[#ffc6ff]', 'bg-[#9bf6ff]', 'bg-[#ffd6a5]', 'bg-[#caffbf]'];
 
           return (
-            <div className="min-h-screen w-full font-sans text-gray-800 p-4 flex flex-col items-center">
-              <header className="text-center mb-8">
-                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil.jpg" className="w-full max-w-md mx-auto rounded-xl shadow-lg" />
-                <h1 className="font-lilita text-4xl text-[#0098d9] mt-6">Toca la Campana</h1>
+            <div className="min-h-screen w-full font-sans text-gray-800 p-2 flex flex-col items-center pb-10">
+              <header className="text-center w-full max-w-4xl mt-4 mb-8">
+                <img src="https://fundacionabrazaunsueno.com/wp-content/uploads/2026/01/toca-la-campana-movil.jpg" className="w-full max-w-md mx-auto rounded-2xl shadow-xl" />
+                <h1 className="font-lilita text-5xl text-[#0098d9] mt-6 tracking-tight uppercase">Toca la Campana</h1>
+                <p className="text-xs font-bold text-[#0098d9] uppercase tracking-widest mt-2">by FUNDACIÓN ABRAZA UN SUEÑO</p>
               </header>
 
-              <div onClick={handleRing} className={`cursor-pointer mb-10 ${isSwinging ? 'bell-swing' : ''}`}>
-                <svg width="150" height="150" viewBox="0 0 300 300">
-                  <path d="M 150 50 Q 150 20 180 20 L 120 20 Q 150 20 150 50 Z" fill="#eab308" />
-                  <path d="M 80 230 Q 60 110 120 70 L 180 70 Q 240 110 220 230 Q 270 240 270 260 L 30 260 Q 30 240 80 230 Z" fill="#facc15" />
+              <div className="w-full max-w-3xl px-4 mb-12 text-center">
+                  <h2 className="font-lilita text-3xl text-[#0098d9] mb-4 uppercase">¿Qué significa tocar la campana? 🔔</h2>
+                  <div className="bg-blue-50 border-l-4 border-[#ffd058] p-6 rounded-r-2xl shadow-sm text-left">
+                      <p className="font-quicksand text-lg text-gray-700 italic">"Es el sonido de la victoria: el gesto con el que un niño celebra haber ganado una batalla contra el cáncer."</p>
+                  </div>
+              </div>
+
+              <div onClick={handleRing} className={`cursor-pointer mb-12 transition-transform hover:scale-105 active:scale-95 ${isSwinging ? 'bell-swing' : ''}`}>
+                <svg width="180" height="180" viewBox="0 0 300 300">
+                  <g transform="translate(150, 50)">
+                    <circle cx="0" cy="0" r="15" fill="#eab308" />
+                    <path d="M -70 180 Q -90 60 -30 20 L 30 20 Q 90 60 70 180 Q 120 190 120 210 L -120 210 Q -120 190 -70 180 Z" fill="#facc15" />
+                  </g>
                 </svg>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 w-full max-w-sm mb-10 text-center">
-                <div className="bg-[#0098d9] text-white p-4 rounded-2xl">
-                  <div className="font-lilita text-4xl">{Math.floor(leads.length / 20)}</div>
-                  <p className="text-sm">Talleres</p>
+              <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-12">
+                <div className="bg-[#0098d9] rounded-3xl p-6 text-center text-white shadow-lg">
+                  <div className="font-lilita text-5xl">{Math.floor(leads.length / 20)}</div>
+                  <p className="font-bold uppercase text-xs tracking-tighter opacity-80">Talleres Logrados</p>
                 </div>
-                <div className="bg-[#ffd058] p-4 rounded-2xl">
-                  <div className="font-lilita text-4xl">{leads.length}</div>
-                  <p className="text-sm">Ecos</p>
+                <div className="bg-[#ffd058] rounded-3xl p-6 text-center text-[#001f3f] shadow-lg">
+                  <div className="font-lilita text-5xl">{leads.length}</div>
+                  <p className="font-bold uppercase text-xs tracking-tighter opacity-80">Ecos Totales</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-5xl">
-                {messages.map((m, i) => (
-                  <div key={i} className={`${postItColors[i % 5]} p-6 rounded-lg shadow-md transform rotate-${i%2===0?1:'-1'}`}>
-                    <p className="font-quicksand italic">"{m.message}"</p>
-                    <p className="text-right font-bold mt-2">- {m.name}</p>
-                  </div>
-                ))}
+              <div className="w-full max-w-5xl px-4">
+                <h2 className="font-lilita text-3xl text-center text-[#0098d9] mb-8 uppercase tracking-widest">Mural de Esperanza 💌</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {messages.map((m, i) => (
+                    <div key={i} className={`${postItColors[i % 5]} p-6 rounded-lg shadow-lg transform rotate-${i%2===0?1:'-1'}`}>
+                      <p className="font-quicksand text-gray-800 leading-relaxed font-medium">"{m.message}"</p>
+                      <p className="text-right font-lilita text-[#001f3f] mt-4">- {m.name}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* MODALES */}
+              {/* MODALES DE INTERACCIÓN */}
               {showLeadModal && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
-                  <form onSubmit={submitLead} className="bg-white p-8 rounded-[24px] w-full max-w-sm space-y-4">
-                    <h2 className="font-lilita text-2xl text-center">¡Deja tu eco!</h2>
-                    <input type="text" placeholder="Nombre" className="w-full border p-3 rounded-lg" onChange={e => setFormData({...formData, name: e.target.value})} required />
-                    <input type="email" placeholder="Email" className="w-full border p-3 rounded-lg" onChange={e => setFormData({...formData, email: e.target.value})} required />
-                    <button type="submit" className="w-full bg-[#ffd058] font-bold py-3 rounded-xl">REGISTRAR</button>
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[150] p-4 backdrop-blur-md">
+                  <form onSubmit={submitLead} className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden animate-in zoom-in shadow-2xl">
+                    <div className="bg-[#0098d9] p-6 text-center text-white">
+                      <h2 className="font-lilita text-3xl uppercase">¡Deja tu eco!</h2>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <input type="text" placeholder="Tu nombre" className="w-full border-2 border-gray-100 p-4 rounded-xl focus:border-[#ffd058] outline-none" onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      <input type="email" placeholder="Tu email" className="w-full border-2 border-gray-100 p-4 rounded-xl focus:border-[#ffd058] outline-none" onChange={e => setFormData({...formData, email: e.target.value})} required />
+                      <button type="submit" className="w-full bg-[#ffd058] text-[#001f3f] font-lilita text-2xl py-4 rounded-xl shadow-lg uppercase tracking-wider">¡REGISTRAR ECO! 🔔</button>
+                    </div>
                   </form>
                 </div>
               )}
 
               {welcomeMessage && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[101] p-4">
-                  <div className="bg-white p-8 rounded-[24px] text-center max-w-sm">
-                    <h2 className="font-lilita text-2xl text-[#0098d9] mb-4">¡GRACIAS POR TU ECO!</h2>
-                    <button onClick={() => { setWelcomeMessage(false); setShowThanksModal(true); }} className="w-full bg-[#0098d9] text-white py-3 rounded-xl">Continuar</button>
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[160] p-4 backdrop-blur-md">
+                  <div className="bg-white rounded-[32px] p-8 text-center max-w-sm shadow-2xl animate-in zoom-in">
+                    <h2 className="font-lilita text-3xl text-[#0098d9] mb-4 uppercase">¡GRACIAS POR TU ECO!</h2>
+                    <p className="font-quicksand text-lg text-gray-600 mb-8 leading-relaxed">Tu registro se ha sumado a esta gran orquesta de esperanza.</p>
+                    <button onClick={() => { setWelcomeMessage(false); setShowThanksModal(true); }} className="w-full bg-[#0098d9] text-white py-4 rounded-xl font-lilita text-2xl shadow-lg uppercase">Siguiente</button>
                   </div>
                 </div>
               )}
 
               {showThanksModal && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
-                  <form onSubmit={submitMessage} className="bg-white p-8 rounded-[24px] w-full max-w-sm">
-                    <textarea className="w-full border p-4 rounded-lg h-32 mb-4" placeholder="Tu mensaje de esperanza..." onChange={e => setMessageData(e.target.value)}></textarea>
-                    <button type="submit" className="w-full bg-[#0098d9] text-white py-3 rounded-xl">ENVIAR MENSAJE</button>
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[150] p-4 backdrop-blur-md">
+                  <form onSubmit={submitMessage} className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in">
+                     <div className="bg-[#0098d9] p-6 text-center text-white"><h2 className="font-lilita text-2xl uppercase tracking-tighter">¿Dejas un mensaje para los niños?</h2></div>
+                     <div className="p-6">
+                       <textarea className="w-full border-2 border-gray-100 p-4 rounded-xl h-40 resize-none outline-none focus:border-[#ffd058]" placeholder="Escribe aquí tu mensaje de fuerza..." onChange={e => setMessageData(e.target.value)}></textarea>
+                       <div className="flex gap-3 mt-4">
+                         <button type="button" onClick={() => setShowThanksModal(false)} className="flex-1 py-4 bg-gray-50 text-gray-400 font-bold rounded-xl uppercase">Omitir</button>
+                         <button type="submit" className="flex-2 bg-[#0098d9] text-white py-4 px-6 rounded-xl font-bold uppercase shadow-lg">Enviar Eco 🚀</button>
+                       </div>
+                     </div>
                   </form>
                 </div>
               )}
 
+              {/* MODAL ESPECIAL CADA 20 CAMPANADAS */}
               {showGoalModal && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[200] p-4 backdrop-blur-md">
-                  <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl overflow-hidden text-center">
-                    <div className="bg-[#ffd058] p-8">
-                      <div className="text-6xl mb-4">🔔</div>
-                      <h2 className="font-lilita text-3xl">¡EL CIELO CELEBRA!</h2>
-                      <p className="font-bold opacity-80 uppercase text-xs tracking-widest mt-2">META DE {leads.length} CAMPANADAS LOGRADA</p>
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[200] p-4 backdrop-blur-lg">
+                  <div className="bg-white rounded-[40px] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in duration-500">
+                    <div className="bg-[#ffd058] p-10 text-center text-[#001f3f]">
+                      <div className="text-7xl mb-4 animate-bounce">🔔</div>
+                      <h2 className="font-lilita text-3xl leading-tight uppercase">¡EL CIELO CELEBRA!</h2>
+                      <p className="font-bold opacity-80 mt-2 uppercase text-sm tracking-widest tracking-widest">Meta de {leads.length} campanadas lograda</p>
                     </div>
-                    <div className="p-8">
-                      <p className="font-quicksand text-lg text-gray-700 leading-relaxed mb-6">
-                        ¡Lo has logrado! Hoy, gracias a tu registro, financiamos el <strong>Taller de Arteterapia nº {leads.length / 20}</strong> para Sofía y sus compañeros. 🎨✨
+                    <div className="p-10 text-center">
+                      <p className="font-quicksand text-gray-700 text-xl mb-8 leading-relaxed">
+                        ¡Lo has logrado! Tú y otras 19 personas acaban de completar una nueva meta. 
+                        <br /><br />
+                        Hoy financiamos el <strong>Taller de Arteterapia nº {leads.length / 20}</strong> para Sofía y sus compañeros. 🎨✨
                       </p>
-                      <button onClick={() => setShowGoalModal(false)} className="w-full bg-[#0098d9] text-white font-bold py-4 rounded-2xl shadow-lg">¡AMÉN! 🙏</button>
+                      <button onClick={() => setShowGoalModal(false)} className="w-full bg-[#0098d9] text-white font-lilita text-3xl py-6 rounded-3xl shadow-xl uppercase">¡AMÉN! 🙏</button>
                     </div>
                   </div>
                 </div>
