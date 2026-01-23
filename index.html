@@ -74,14 +74,14 @@
 <body class="bg-gradient-to-b from-white to-blue-50">
 
     <div id="root"></div>
-<script src="_conf.js"></script>
+    <script src="_conf.js"></script>
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef } from 'react';
         import { createRoot } from 'react-dom/client';
         import { initializeApp } from 'firebase/app';
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-        import {senmailer}  from './_conf.js'
+       
 
         
 
@@ -523,6 +523,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
