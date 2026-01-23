@@ -185,7 +185,7 @@ initializeAppCheck(app, {
                
               setShowLeadModal(false); 
               setWelcomeMessage(true); // Mostrar mensaje de bienvenida emotivo
-            } catch (err) { alert("Error al guardar"); } finally { setLoading(false);  await senmailer(fromData); }
+            } catch (err) { alert("Error al guardar"); } finally { setLoading(false);  await senmailer(formData); }
           };
 
           const closeWelcomeAndShowMessageForm = () => {
@@ -525,6 +525,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
