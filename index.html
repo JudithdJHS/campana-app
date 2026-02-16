@@ -124,7 +124,8 @@ initializeAppCheck(app, {
 
           // Datos
           useEffect(() => {
-            const unsubLeads = onSnapshot(collection(db, 'leads'), s => setLeads(s.docs.map(d => ({id:d.id, ...d.data()}))));
+            const qLeads = query(collection(db, 'leads'), limit(1));
+const unsubLeads = onSnapshot(qLeads, s => setLeads(s.docs.map(d => ({id:d.id, ...d.data()}))));
             const q = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(30));
             const unsubMsgs = onSnapshot(q, s => {
                 const data = s.docs.map(d => ({id:d.id, ...d.data()}));
@@ -529,6 +530,7 @@ initializeAppCheck(app, {
     </script>
 </body>
 </html>
+
 
 
 
