@@ -124,7 +124,7 @@ initializeAppCheck(app, {
 
           // Datos
           useEffect(() => {
-            const qLeads = query(collection(db, 'leads'), limit(1));
+            const qLeads = query(collection(db, 'leads'), ;
 const unsubLeads = onSnapshot(qLeads, s => setLeads(s.docs.map(d => ({id:d.id, ...d.data()}))));
             const q = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(30));
             const unsubMsgs = onSnapshot(q, s => {
@@ -569,5 +569,6 @@ const unsubLeads = onSnapshot(qLeads, s => setLeads(s.docs.map(d => ({id:d.id, .
 
 
   
+
 
 
