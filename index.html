@@ -206,7 +206,7 @@ const unsubLeads = onSnapshot(qLeads, s => setLeads(s.docs.map(d => ({id:d.id, .
             } catch (err) { alert("Error"); } finally { setLoading(false); }
           };
 
-          const totalEchos = leads.length +157;
+          const totalEchos = leads.length ;
           const workshops = Math.floor(totalEchos / 20);
           const progress = totalEchos % 20;
 
@@ -569,4 +569,5 @@ const unsubLeads = onSnapshot(qLeads, s => setLeads(s.docs.map(d => ({id:d.id, .
 
 
   
+
 
